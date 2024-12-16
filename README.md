@@ -1,9 +1,8 @@
-# Blog - Runrioter's blog
+# Runrioter's blog
 
-## Ref
+Built by with Svelte
 
-* [`sv`](https://github.com/sveltejs/cli).
+## Refs
 
-## Deploy
+* [sv](https://github.com/sveltejs/cli) · [Svelte](https://svelte.dev/docs/svelte/overview) · [SvelteKit](https://svelte.dev/docs/kit/introduction)
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
