@@ -11,6 +11,6 @@ updates:
       time: "10:00"
       timezone: "Asia/Shanghai"
     reviewers:
-      - "popmoore"
+      - "Runrioter"
     labels:
       - "dependencies"
