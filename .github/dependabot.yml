@@ -4,13 +4,13 @@
 version: 2
 updates:
   # Enable version updates for maven
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "daily"
-      time: "10:00"
-      timezone: "Asia/Shanghai"
+      interval: 'daily'
+      time: '10:00'
+      timezone: 'Asia/Shanghai'
     reviewers:
-      - "Runrioter"
+      - 'Runrioter'
     labels:
-      - "dependencies"
+      - 'dependencies'

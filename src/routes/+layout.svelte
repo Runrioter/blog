@@ -1,44 +1,27 @@
 <script lang="ts">
-	import { i18n } from "$lib/i18n";
-	import { ParaglideJS } from "@inlang/paraglide-sveltekit";
-	import Header from './Header.svelte';
 	import '../app.css';
-	
+	import Header from './Header.svelte';
+
 	let { children } = $props();
 </script>
 
-<ParaglideJS {i18n}>
-	<div class="app">
-		<Header></Header>
+<div class="app">
+	<Header></Header>
 
-		<main>
-			{@render children()}
-		</main>
+	{@render children()}
 
-		<footer>
-			<p>
-				visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit
-			</p>
-		</footer>
-	</div>
-</ParaglideJS>
+	<footer>
+		<p>
+			visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit
+		</p>
+	</footer>
+</div>
 
 <style>
 	.app {
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
 	}
 
 	footer {
