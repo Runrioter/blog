@@ -4,11 +4,16 @@ import typography from '@tailwindcss/typography';
 import type { Config } from 'tailwindcss';
 
 export default {
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+    content: ['./src/**/*.{html,js,svelte,ts}'],
 
-	theme: {
-		extend: {}
-	},
+    theme: {
+        extend: {
+            transform: {
+                'rotate-y-0': 'rotateY(0deg)',
+                'rotate-y-180': 'rotateY(180deg)',
+            },
+        },
+    },
 
-	plugins: [typography, forms, containerQueries]
+    plugins: [typography, forms, containerQueries]
 } satisfies Config;
