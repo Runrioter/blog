@@ -8,7 +8,7 @@
 
 <header>
 
-	<Aavatar logo={avatar} alt="Svelte" href="https://github.com/Runrioter" />
+	<Aavatar logo={avatar} alt="Runrioter's Github" href="https://github.com/Runrioter" />
 
 	<nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">

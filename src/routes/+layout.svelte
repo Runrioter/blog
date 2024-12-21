@@ -1,6 +1,8 @@
 <script lang="ts">
 	import '../app.css';
+	import Aavatar from './Aavatar.svelte';
 	import Header from './Header.svelte';
+	import github from '$lib/images/github.svg';
 
 	let { children } = $props();
 </script>
@@ -10,10 +12,8 @@
 
 	{@render children()}
 
-	<footer>
-		<p>
-			visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit
-		</p>
+	<footer class="w-full flex justify-center items-center absolute bottom-0">
+		<Aavatar logo={github} alt="Runrioter's Github" href="https://github.com/Runrioter" />
 	</footer>
 </div>
 
@@ -22,23 +22,5 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 </style>
