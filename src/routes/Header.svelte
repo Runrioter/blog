@@ -7,7 +7,6 @@
 </script>
 
 <header>
-
 	<Aavatar logo={avatar} alt="Runrioter's Github" href="https://github.com/Runrioter" />
 
 	<nav>

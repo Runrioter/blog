@@ -12,7 +12,7 @@
 
 	{@render children()}
 
-	<footer class="w-full flex justify-center items-center absolute bottom-0">
+	<footer class="absolute bottom-0 flex w-full items-center justify-center">
 		<Aavatar logo={github} alt="Runrioter's Github" href="https://github.com/Runrioter" />
 	</footer>
 </div>
