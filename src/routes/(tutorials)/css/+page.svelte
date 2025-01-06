@@ -60,10 +60,14 @@
 </div>
 
 <style>
-	h1 {
+	header > h1 {
 		text-align: center;
 		color: white;
 		line-height: 100px;
 		margin: 0;
+		transition: background-color 2s;
+	}
+	header > h1:hover {
+		background-color: brown;
 	}
 </style>

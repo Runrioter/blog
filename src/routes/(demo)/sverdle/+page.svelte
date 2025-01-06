@@ -106,11 +106,11 @@
 >
 	<a class="how-to-play" href="/sverdle/how-to-play">How to play</a>
 
-	<div class="grid" class:playing={!won} class:bad-guess={form?.badGuess}>
+	<div class={['grid', { 'playing': !won, 'bad-guess': form?.badGuess }]}>
 		{#each Array.from(Array(6).keys()) as row (row)}
 			{@const current = row === i}
 			<h2 class="visually-hidden">Row {row + 1}</h2>
-			<div class="row" class:current>
+			<div class={[ 'row', current ]}>
 				{#each Array.from(Array(5).keys()) as column (column)}
 					{@const guess = current ? currentGuess : data.guesses[row]}
 					{@const answer = data.answers[row]?.[column]}
@@ -119,7 +119,7 @@
 					{@const exact = answer === 'x'}
 					{@const close = answer === 'c'}
 					{@const missing = answer === '_'}
-					<div class="letter" class:exact class:close class:missing class:selected>
+					<div class={ [ 'letter', exact, close, missing, selected ] }>
 						{value}
 						<span class="visually-hidden">
 							{#if exact}
@@ -149,7 +149,7 @@
 			</button>
 		{:else}
 			<div class="keyboard">
-				<button data-key="enter" class:selected={submittable} disabled={!submittable}>enter</button>
+				<button data-key="enter" class={{'selected': submittable}} disabled={!submittable}>enter</button>
 
 				<button
 					onclick={update}
