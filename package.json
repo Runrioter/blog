@@ -24,6 +24,8 @@
 		"@sveltejs/adapter-static": "^3.0.8",
 		"@sveltejs/kit": "^2.17.1",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@tailwindcss/postcss": "^4.0.3",
+		"@tailwindcss/vite": "^4.0.3",
 		"autoprefixer": "^10.4.20",
 		"eslint": "^9.19.0",
 		"eslint-config-prettier": "^10.0.1",
@@ -42,9 +44,6 @@
 		"vitest": "^3.0.4"
 	},
 	"dependencies": {
-		"@inlang/paraglide-sveltekit": "^0.15.5",
-		"@tailwindcss/container-queries": "^0.1.1",
-		"@tailwindcss/forms": "^0.5.10",
-		"@tailwindcss/typography": "^0.5.16"
+		"@inlang/paraglide-sveltekit": "^0.15.5"
 	}
 }

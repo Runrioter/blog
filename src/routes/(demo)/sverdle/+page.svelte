@@ -197,7 +197,7 @@
 	></div>
 {/if}
 
-<style>
+<style lang="postcss">
 	form {
 		width: 100%;
 		height: 100%;

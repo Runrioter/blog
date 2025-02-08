@@ -23,12 +23,3 @@
 		</div>
 	</div>
 </div>
-
-<style lang="postcss">
-	.box {
-		@apply mt-2 border border-red-600;
-	}
-	.float {
-		@apply float-left flex h-[100px] w-[100px] flex-col items-center justify-center text-nowrap bg-amber-200;
-	}
-</style>

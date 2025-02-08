@@ -1,6 +1,4 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss";
 @import '@fontsource/fira-mono';
 
 @layer components {
@@ -81,7 +79,7 @@ pre {
 .text-column {
 	display: flex;
 	max-width: 48rem;
-	flex: 0.6;
+	flex: 1;
 	flex-direction: column;
 	justify-content: center;
 	margin: 0 auto;
@@ -113,4 +111,11 @@ button:focus:not(:focus-visible) {
 	position: absolute;
 	width: 1px;
 	white-space: nowrap;
+}
+
+.box {
+	@apply mt-2 border border-red-600;
+}
+.float {
+	@apply float-left flex h-[100px] w-[100px] flex-col items-center justify-center text-nowrap bg-amber-200;
 }
