@@ -20,9 +20,6 @@ const config = {
 		},
 		prerender: {
 			handleHttpError: ({ path, referrer, message }) => {
-				if (path === '/sverdle') {
-					return;
-				}
 				throw new Error(message);
 			}
 		}
