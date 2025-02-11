@@ -5,10 +5,6 @@ export default {
 
 	theme: {
 		extend: {
-			transform: {
-				'rotate-y-0': 'rotateY(0deg)',
-				'rotate-y-180': 'rotateY(180deg)'
-			}
 		}
 	},
 } satisfies Config;

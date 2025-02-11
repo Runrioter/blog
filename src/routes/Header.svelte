@@ -3,11 +3,11 @@
 	import avatar from '$lib/images/avatar.png';
 	import github from '$lib/images/github.svg';
 	import { base } from '$app/paths';
-	import Aavatar from './Aavatar.svelte';
+	import Avatar from './Avatar.svelte';
 </script>
 
 <header>
-	<Aavatar logo={avatar} alt="Runrioter's Github" href="https://github.com/Runrioter" />
+	<Avatar logo={avatar} alt="Runrioter's Github" href="https://github.com/Runrioter" />
 
 	<nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
@@ -26,7 +26,7 @@
 		</svg>
 	</nav>
 
-	<Aavatar logo={github} alt="GitHub" href="https://github.com/sveltejs/kit" />
+	<Avatar logo={github} alt="GitHub" href="https://github.com/sveltejs/kit" />
 </header>
 
 <style>
