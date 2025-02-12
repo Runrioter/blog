@@ -10,21 +10,14 @@
 </svelte:head>
 
 <section>
-	<h1>
+	<h1 class="w-full text-center text-[2rem] font-normal">
 		<span class="welcome">
 			<picture>
 				<source srcset={welcome} type="image/webp" />
 				<img src={welcomeFallback} alt="Welcome" />
 			</picture>
 		</span>
-
-		to your new<br />SvelteKit app
 	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
 	<Counter />
 </section>
 
@@ -35,10 +28,6 @@
 		justify-content: center;
 		align-items: center;
 		flex: 1;
-	}
-
-	h1 {
-		width: 100%;
 	}
 
 	.welcome {

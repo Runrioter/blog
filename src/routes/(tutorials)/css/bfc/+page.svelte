@@ -9,7 +9,7 @@
 	<meta name="description" content="Block formatting context" />
 </svelte:head>
 
-<h1>Block Formatting Context</h1>
+<h1 class="w-full text-center text-[2rem] font-normal">Block Formatting Context</h1>
 
 <div class="mx-auto my-10">
 	<div class="box">

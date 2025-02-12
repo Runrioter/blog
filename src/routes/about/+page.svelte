@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { base } from '$app/paths';
 </script>
 
 <svelte:head>
@@ -7,8 +6,8 @@
 	<meta name="description" content="About this app" />
 </svelte:head>
 
-<div class="flex flex-col flex-1 justify-center max-w-3xl mx-8">
-	<h1>About this app</h1>
+<div class="mx-8 flex max-w-3xl flex-1 flex-col justify-center">
+	<h1 class="w-full text-center text-[2rem] font-normal">About this app</h1>
 
 	<p>
 		This is a <a href="https://svelte.dev/docs/kit">SvelteKit</a> app. You can make your own by typing

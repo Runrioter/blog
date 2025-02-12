@@ -3,6 +3,7 @@
 	import Avatar from './Avatar.svelte';
 	import Header from './Header.svelte';
 	import github from '$lib/images/github.svg';
+	import SvelteKitDashboard from '$lib/components/SvelteKitDashboard.svelte';
 
 	let { children } = $props();
 </script>
@@ -13,6 +14,7 @@
 	{@render children()}
 
 	<footer class="flex w-full items-center justify-center">
+		<SvelteKitDashboard />
 		<Avatar logo={github} alt="Runrioter's Github" href="https://github.com/Runrioter" />
 	</footer>
 </div>
