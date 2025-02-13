@@ -12,43 +12,41 @@
 
 <h1 class="w-full text-center text-[2rem] font-normal">CSS: Position</h1>
 
-<p class="mx-10">
+<p>
 	The `absolute` element is removed from the normal document flow, and no space is created for the
 	element in the page layout. The element is positioned relative to its closest <b>positioned</b> ancestor
 	(if any) or to the initial containing block. Its final position is determined by the values of top,
 	right, bottom, and left.
 </p>
 
-<blockquote class="m-10 rounded-sm bg-blue-200 p-4 text-sm">
+<blockquote class="mt-6 rounded-sm bg-blue-200 p-4 text-sm">
 	A <b>positioned</b> element is an element whose computed position value is either relative, absolute,
 	fixed, or sticky. (In other words, it's anything except static.)
 </blockquote>
 
-<div class="mx-auto my-10">
-	<div class="flex flex-col gap-16">
-		<div class="mt-2">
-			<div class="relative size-fit bg-amber-400">
-				<div>Position: relative</div>
-				<Square text="L" position="left" />
-			</div>
+<div class="my-12 flex flex-col items-center gap-16">
+	<div class="mt-2">
+		<div class="relative size-fit bg-amber-400">
+			<div>Position: relative</div>
+			<Square text="L" position="left" />
 		</div>
-		<div class="mt-2">
-			<div class="relative size-fit bg-amber-400">
-				<div>Position: relative</div>
-				<Square text="R" position="right" />
-			</div>
+	</div>
+	<div class="mt-2">
+		<div class="relative size-fit bg-amber-400">
+			<div>Position: relative</div>
+			<Square text="R" position="right" />
 		</div>
-		<div class="mt-2">
-			<div class="relative size-fit bg-amber-400">
-				<div>Position: relative</div>
-				<Square text="T" position="top" />
-			</div>
+	</div>
+	<div class="mt-2">
+		<div class="relative size-fit bg-amber-400">
+			<div>Position: relative</div>
+			<Square text="T" position="top" />
 		</div>
-		<div class="mt-2">
-			<div class="relative size-fit bg-amber-400">
-				<div>Position: relative</div>
-				<Square text="B" position="bottom" />
-			</div>
+	</div>
+	<div class="mt-2">
+		<div class="relative size-fit bg-amber-400">
+			<div>Position: relative</div>
+			<Square text="B" position="bottom" />
 		</div>
 	</div>
 </div>

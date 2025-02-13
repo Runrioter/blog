@@ -59,7 +59,8 @@
 	</section>
 </div>
 
-<style>
+<style lang="postcss">
+	@reference "tailwindcss/theme";
 	header > h1 {
 		text-align: center;
 		color: white;
@@ -69,5 +70,9 @@
 	}
 	header > h1:hover {
 		background-color: brown;
+	}
+
+	.article {
+		@apply m-3 shrink grow basis-[200px] bg-red-500 p-3;
 	}
 </style>

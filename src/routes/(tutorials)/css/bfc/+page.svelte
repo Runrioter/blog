@@ -11,7 +11,7 @@
 
 <h1 class="w-full text-center text-[2rem] font-normal">Block Formatting Context</h1>
 
-<div class="mx-auto my-10">
+<div class="my-10">
 	<div class="box">
 		<div class="float mb-2">float: left</div>
 		<div class="text-center">No Block Formatting Context</div>

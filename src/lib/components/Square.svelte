@@ -1,22 +1,32 @@
 <script lang="ts">
 	interface Props {
 		text: string;
-		position: 'left' | 'right' | 'top' | 'bottom';
+		position?: 'left' | 'right' | 'top' | 'bottom';
+		float?: 'none' | 'left' | 'right' | 'start' | 'end';
 	}
 
-	const { text, position }: Props = $props();
+	const { text, position, float }: Props = $props();
+
+	const floatMap = {
+		none: 'float-none',
+		left: 'float-left',
+		right: 'float-right',
+		start: 'float-start',
+		end: 'float-end'
+	};
 </script>
 
 <div
 	class={[
-		'absolute size-10 border-1 border-solid bg-amber-400/50 text-center text-base/10',
-		`position-${position}`
+		'size-10 border-1 border-solid bg-amber-400/50 text-center text-base/10',
+		position && `absolute position-${position} float-left`,
+		float && floatMap[float]
 	]}
 >
 	{text}
 </div>
 
-<style>
+<style lang="postcss">
 	.position-left {
 		top: 0;
 		right: calc(100% + 2px);

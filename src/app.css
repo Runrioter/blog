@@ -1,12 +1,6 @@
 @import 'tailwindcss';
 @import '@fontsource/fira-mono';
 
-@layer components {
-	.article {
-		@apply m-3 shrink grow basis-[200px] bg-red-500 p-3;
-	}
-}
-
 :root {
 	--font-mono: 'Fira Mono', monospace;
 	--color-bg-0: rgb(202, 216, 228);
