@@ -1,29 +1,18 @@
 <script lang="ts">
-	let { logo, href, alt = 'avatar' } = $props();
-
-	let flipped = $state(false);
-
-	function flip(event: Event) {
-		event.preventDefault();
-		flipped = !flipped;
+	interface AvatarProps {
+		logo: string;
+		href: string;
+		alt?: string;
 	}
+	let { logo, href, alt = 'avatar' }: AvatarProps = $props();
 </script>
 
-<div class="h-12 w-12">
-	<a
-		onclick={flip}
-		style="transform-style: preserve-3d;"
-		class="flex h-full w-full items-center justify-center"
-		{href}
-	>
+<div class="h-12 w-12 flex items-center justify-center">
+	<a target="_blank" {href}>
 		<img
-			class="front absolute h-8 w-8 rounded-full object-contain transition duration-1000"
-			style:transform={flipped ? 'rotateY(180deg)' : 'rotateY(0)'}
+			class='h-8 w-8 rounded-full object-contain'
 			src={logo}
 			{alt}
 		/>
 	</a>
 </div>
-
-<style>
-</style>

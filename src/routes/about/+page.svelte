@@ -6,7 +6,7 @@
 	<meta name="description" content="About this app" />
 </svelte:head>
 
-<div class="mx-8 flex max-w-3xl flex-1 flex-col justify-center">
+<div class="mx-auto flex max-w-3xl flex-1 flex-col justify-center">
 	<h1 class="w-full text-center text-[2rem] font-normal">About this app</h1>
 
 	<p>

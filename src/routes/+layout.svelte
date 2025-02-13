@@ -2,7 +2,7 @@
 	import '../app.css';
 	import Avatar from './Avatar.svelte';
 	import Header from './Header.svelte';
-	import github from '$lib/images/github.svg';
+	import svelte from '$lib/images/svelte-logo.svg';
 	import SvelteKitDashboard from '$lib/components/SvelteKitDashboard.svelte';
 
 	let { children } = $props();
@@ -15,7 +15,7 @@
 
 	<footer class="flex w-full items-center justify-center">
 		<SvelteKitDashboard />
-		<Avatar logo={github} alt="Runrioter's Github" href="https://github.com/Runrioter" />
+		<Avatar logo={svelte} alt="SvelteKit" href="https://github.com/sveltejs/kit" />
 	</footer>
 </div>
 

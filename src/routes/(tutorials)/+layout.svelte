@@ -5,6 +5,6 @@
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 </script>
 
-<div class="mx-2 border-y border-slate-200">
+<div class="mx-2 grow border-y border-slate-200">
 	{@render children()}
 </div>

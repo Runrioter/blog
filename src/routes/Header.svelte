@@ -4,10 +4,11 @@
 	import github from '$lib/images/github.svg';
 	import { base } from '$app/paths';
 	import Avatar from './Avatar.svelte';
+	import RotatableAvatar from '$lib/components/RotatableAvatar.svelte';
 </script>
 
 <header>
-	<Avatar logo={avatar} alt="Runrioter's Github" href="https://github.com/Runrioter" />
+	<RotatableAvatar logo={avatar} alt="Runrioter's Github" />
 
 	<nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
@@ -29,7 +30,7 @@
 		</svg>
 	</nav>
 
-	<Avatar logo={github} alt="GitHub" href="https://github.com/sveltejs/kit" />
+	<Avatar logo={github} alt="GitHub" href="https://github.com/Runrioter" />
 </header>
 
 <style>
