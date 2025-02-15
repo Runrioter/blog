@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import Avatar from './Avatar.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
 	import Header from './Header.svelte';
 	import svelte from '$lib/images/svelte-logo.svg';
 	import SvelteKitDashboard from '$lib/components/SvelteKitDashboard.svelte';
@@ -9,7 +9,7 @@
 </script>
 
 <div class="app">
-	<Header></Header>
+	<Header />
 
 	{@render children()}
 

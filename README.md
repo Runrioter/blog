@@ -1,5 +1,7 @@
 # Runrioter's blog
 
+[![GitHub Pages](https://github.com/Runrioter/blog/actions/workflows/gh-deploy.yml/badge.svg)](https://github.com/Runrioter/blog/actions/workflows/gh-deploy.yml)
+
 Built with Svelte & ❤️
 
 ## Refs

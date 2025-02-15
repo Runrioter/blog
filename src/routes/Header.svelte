@@ -3,7 +3,7 @@
 	import avatar from '$lib/images/avatar.png';
 	import github from '$lib/images/github.svg';
 	import { base } from '$app/paths';
-	import Avatar from './Avatar.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
 	import RotatableAvatar from '$lib/components/RotatableAvatar.svelte';
 </script>
 
@@ -30,7 +30,7 @@
 		</svg>
 	</nav>
 
-	<Avatar logo={github} alt="GitHub" href="https://github.com/Runrioter" />
+	<Avatar logo={github} alt="Runrioter's Blog" href="https://github.com/Runrioter/blog" />
 </header>
 
 <style>
