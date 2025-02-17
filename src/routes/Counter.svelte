@@ -5,10 +5,39 @@
 
 	let offset = $derived(modulo(count.current, 1));
 
+	// inspect the current value of the spring
+	$inspect(`offset -> ${offset}`);
+
 	function modulo(n: number, m: number) {
 		// handle negative numbers
 		return ((n % m) + m) % m;
 	}
+	// How does the Counter work:
+	// # increment 1
+	// # offset 0 -----> 1 -> 0
+
+	// # decrement 1
+	// # offset 0 -> 1 -----> 0
+
+	// ```increment
+	// ---         ---
+	// 1  ---      2
+	// === 1.5 === ===
+	// 0  === 1.9  1
+	// === 0.5 === ===
+	// 	--- 0.9
+	// 		---
+	// ```
+
+	// ```decrement
+	// ---         ---
+	// 2      ===  1
+	// === === 1.5 ===
+	// 1  1.9 ===  0
+	// === === 0.5 ===
+	// 	0.9 ---
+	// 	---
+	// ```
 </script>
 
 <div class="counter">
