@@ -14,5 +14,9 @@
 	onclick={flip}
 	class={['transition duration-1000 transform-flat', flipped ? 'rotate-y-180' : 'rotate-y-0']}
 >
-	{@render children()}
+	{#if children}
+		{@render children()}
+	{:else}
+		<p>fallback content</p>
+	{/if}
 </div>
