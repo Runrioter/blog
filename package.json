@@ -16,7 +16,7 @@
 		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
-		"@eslint/compat": "^1.2.7",
+		"@eslint/compat": "^1.2.8",
 		"@fontsource/fira-mono": "^5.2.5",
 		"@neoconfetti/svelte": "^2.2.2",
 		"@playwright/test": "^1.51.1",
