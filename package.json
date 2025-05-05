@@ -17,7 +17,7 @@
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.8",
-		"@fontsource/fira-mono": "^5.2.5",
+		"@fontsource/fira-mono": "^5.2.6",
 		"@neoconfetti/svelte": "^2.2.2",
 		"@playwright/test": "^1.52.0",
 		"@sveltejs/adapter-auto": "^6.0.0",
