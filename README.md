@@ -10,3 +10,4 @@ Built with Svelte & ❤️
 - ~~[mdsvex](https://mdsvex.pngwn.io/docs)~~
 - [Tailwind CSS](https://tailwindcss.com/docs/installation/framework-guides/sveltekit)
 - [sveltelab](https://www.sveltelab.dev/)
+- [Iconify](https://iconify.design/docs/icon-components/svelte/)
