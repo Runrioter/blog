@@ -1,0 +1,10 @@
+<script lang="ts">
+</script>
+
+# CloudFormation
+
+## Resources
+
+* [AWS CloudFormation Documentation](https://docs.aws.amazon.com/cloudformation/)
+* [AWS CloudFormation resources](https://aws.amazon.com/cloudformation/resources/)
+* [Github for AWS CloudFormation](https://github.com/aws-cloudformation)

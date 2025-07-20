@@ -6,5 +6,7 @@
 </script>
 
 <div class="mx-2 grow border-y border-slate-200">
-	{@render children()}
+	<div class="mx-auto max-w-3xl">
+		{@render children()}
+	</div>
 </div>

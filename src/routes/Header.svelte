@@ -21,6 +21,9 @@
 			<li aria-current={page.url.pathname.startsWith(`${base}/css`) ? 'page' : undefined}>
 				<a href="{base}/css">CSS</a>
 			</li>
+			<li aria-current={page.url.pathname.startsWith(`${base}/aws`) ? 'page' : undefined}>
+				<a href="{base}/aws">AWS</a>
+			</li>
 			<li aria-current={page.url.pathname === `${base}/about` ? 'page' : undefined}>
 				<a href="{base}/about">About</a>
 			</li>

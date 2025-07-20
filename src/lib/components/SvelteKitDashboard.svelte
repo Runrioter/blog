@@ -13,7 +13,7 @@
 				<li>Browser: {browser}</li>
 				<li>Building: {building}</li>
 				<li>Dev: {dev}</li>
-				<li>Version: {version}</li>
+				<li>Version: {new Date(parseInt(version)).toISOString()}</li>
 			</ul>
 		</div>
 	</div>
