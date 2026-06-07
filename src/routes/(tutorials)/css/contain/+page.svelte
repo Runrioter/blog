@@ -1,8 +1,5 @@
 <script lang="ts">
 	import Square from '$lib/components/Square.svelte';
-	import type { PageData } from './$types';
-
-	let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>

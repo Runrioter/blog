@@ -23,8 +23,4 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Paraglide
-src/lib/paraglide
-
-.ipynb_checkpoints
-jupyter/
+draft/

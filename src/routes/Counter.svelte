@@ -5,10 +5,6 @@
 
 	let offset = $derived(modulo(count.current, 1));
 
-	// inspect the current value of the spring
-	// $inspect only works during development. In a production build it becomes a noop.
-	$inspect(`offset -> ${offset}`);
-
 	function modulo(n: number, m: number) {
 		// handle negative numbers
 		return ((n % m) + m) % m;
