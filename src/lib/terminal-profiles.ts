@@ -11,7 +11,7 @@ export type TerminalProfile = {
 export const homeTerminalProfile: TerminalProfile = {
 	historyKey: 'runrioter-terminal-history-v1',
 	dirs: {
-		'/': ['ai', 'css', 'aws', 'about', 'topics', 'README.md', 'PRINCIPLES.md'],
+		'/': ['ai', 'css', 'aws', 'about', 'topics', 'README.md'],
 		'/topics': ['ai', 'css', 'aws', 'about'],
 		'/ai': ['intro', 'system-instructions', 'agent-behavior', 'output-formatting'],
 		'/css': ['bfc', 'contain', 'flex', 'position'],
@@ -25,11 +25,6 @@ export const homeTerminalProfile: TerminalProfile = {
 			'- Topics: CSS / AWS / AI',
 			'- Style: terminal-inspired, practical, source-driven',
 			"- Try 'help' for available commands"
-		].join('\n'),
-		'/PRINCIPLES.md': [
-			'1. Explain why before how.',
-			'2. Prefer reusable minimal templates.',
-			'3. Keep engineering trade-offs explicit.'
 		].join('\n'),
 		'/about.md': 'About page summary. Use: open about',
 		'/ai/intro': 'AI intro: prompt engineering foundations and practical templates.',
@@ -50,12 +45,11 @@ export const homeTerminalProfile: TerminalProfile = {
 		'whoami',
 		'cat README.md',
 		'ls -la topics/',
-		'cat PRINCIPLES.md',
 		'cat ai/intro',
 		'cd css',
 		'open github'
 	],
-	hint: 'Try: help, whoami, cat README.md, ls -la topics/, cat PRINCIPLES.md, cat ai/intro, cd css, open github',
+	hint: 'Try: help, whoami, cat README.md, ls -la topics/, cat ai/intro, cd css, open github',
 	introLines: (date) => [
 		'Runrioter Interactive Terminal v1.0',
 		`Date: ${date}`,
