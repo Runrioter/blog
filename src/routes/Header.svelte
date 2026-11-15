@@ -1,8 +1,8 @@
 <script lang="ts">
-	import avatar from '$lib/images/avatar.png';
-	import github from '$lib/images/github.svg';
-	import Avatar from '$lib/components/Avatar.svelte';
-	import RotatableAvatar from '$lib/components/RotatableAvatar.svelte';
+	import avatar from '#lib/images/avatar.png';
+	import github from '#lib/images/github.svg';
+	import Avatar from '#lib/components/Avatar.svelte';
+	import RotatableAvatar from '#lib/components/RotatableAvatar.svelte';
 </script>
 
 <header>

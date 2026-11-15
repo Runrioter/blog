@@ -1,6 +1,6 @@
 <script lang="ts">
-	import InteractiveTerminal from '$lib/components/InteractiveTerminal.svelte';
-	import { cssTerminalProfile } from '$lib/terminal-profiles';
+	import InteractiveTerminal from '#lib/components/InteractiveTerminal.svelte';
+	import { cssTerminalProfile } from '#lib/terminal-profiles.ts';
 
 	const now = new Date().toISOString().slice(0, 10);
 </script>

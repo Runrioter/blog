@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Square from '$lib/components/Square.svelte';
+	import Square from '#lib/components/Square.svelte';
 </script>
 
 <svelte:head>

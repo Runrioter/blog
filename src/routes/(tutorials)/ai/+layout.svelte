@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DocProse from '$lib/components/DocProse.svelte';
+	import DocProse from '#lib/components/DocProse.svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount, tick } from 'svelte';
@@ -12,7 +12,7 @@
 	let activeSectionId = $state<string>('');
 	let observer: IntersectionObserver | undefined;
 
-	const aiEntryPath = resolve('/ai');
+	const aiEntryPath = resolve('ai');
 	const isAiEntryRoute = () => page.url.pathname === aiEntryPath;
 
 	const updateSectionItems = () => {

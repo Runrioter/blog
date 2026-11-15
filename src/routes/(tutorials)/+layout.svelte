@@ -5,8 +5,9 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	const terminalEntryRoutes = [resolve('/ai'), resolve('/css'), resolve('/aws')];
-	const isTerminalEntryRoute = () => terminalEntryRoutes.includes(page.url.pathname);
+	const terminalEntryRoutes = [resolve('ai'), resolve('css'), resolve('aws')];
+	const isTerminalEntryRoute = () =>
+		terminalEntryRoutes.some((route) => page.url.pathname === route);
 </script>
 
 {#if isTerminalEntryRoute()}

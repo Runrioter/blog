@@ -2,7 +2,7 @@ export type TerminalProfile = {
 	historyKey: string;
 	dirs: Record<string, string[]>;
 	files: Record<string, string>;
-	internalRoutes: Record<string, string>;
+	internalRoutes: Record<string, import('$app/types').Path>;
 	helpExamples: string[];
 	hint: string;
 	introLines: (date: string) => string[];
@@ -37,14 +37,14 @@ export const homeTerminalProfile: TerminalProfile = {
 		'/aws/intro': 'AWS intro: deployable and rollback-friendly infrastructure notes.'
 	},
 	internalRoutes: {
-		ai: '/ai',
-		css: '/css',
-		aws: '/aws',
-		about: '/about',
-		'/ai': '/ai',
-		'/css': '/css',
-		'/aws': '/aws',
-		'/about': '/about'
+		ai: 'ai',
+		css: 'css',
+		aws: 'aws',
+		about: 'about',
+		'/ai': 'ai',
+		'/css': 'css',
+		'/aws': 'aws',
+		'/about': 'about'
 	},
 	helpExamples: [
 		'whoami',
@@ -91,16 +91,16 @@ export const aboutTerminalProfile: TerminalProfile = {
 		'/links.txt': ['GitHub: https://github.com/Runrioter'].join('\n')
 	},
 	internalRoutes: {
-		home: '/',
-		ai: '/ai',
-		css: '/css',
-		aws: '/aws',
-		about: '/about',
-		'/': '/',
-		'/ai': '/ai',
-		'/css': '/css',
-		'/aws': '/aws',
-		'/about': '/about'
+		home: '',
+		ai: 'ai',
+		css: 'css',
+		aws: 'aws',
+		about: 'about',
+		'/': '',
+		'/ai': 'ai',
+		'/css': 'css',
+		'/aws': 'aws',
+		'/about': 'about'
 	},
 	helpExamples: [
 		'whoami',
@@ -146,24 +146,24 @@ export const aiTerminalProfile: TerminalProfile = {
 		'/formatting': 'Formatting: output schema, markdown structure, and parseable sections.'
 	},
 	internalRoutes: {
-		home: '/',
-		ai: '/ai',
-		css: '/css',
-		aws: '/aws',
-		about: '/about',
-		basics: '/ai/basics',
-		'system-instructions': '/ai/system-instructions',
-		'agent-design': '/ai/agent-design',
-		formatting: '/ai/formatting',
-		'/': '/',
-		'/ai': '/ai',
-		'/css': '/css',
-		'/aws': '/aws',
-		'/about': '/about',
-		'/basics': '/ai/basics',
-		'/system-instructions': '/ai/system-instructions',
-		'/agent-design': '/ai/agent-design',
-		'/formatting': '/ai/formatting'
+		home: '',
+		ai: 'ai',
+		css: 'css',
+		aws: 'aws',
+		about: 'about',
+		basics: 'ai/basics',
+		'system-instructions': 'ai/system-instructions',
+		'agent-design': 'ai/agent-design',
+		formatting: 'ai/formatting',
+		'/': '',
+		'/ai': 'ai',
+		'/css': 'css',
+		'/aws': 'aws',
+		'/about': 'about',
+		'/basics': 'ai/basics',
+		'/system-instructions': 'ai/system-instructions',
+		'/agent-design': 'ai/agent-design',
+		'/formatting': 'ai/formatting'
 	},
 	helpExamples: [
 		'ls',
@@ -214,24 +214,24 @@ export const cssTerminalProfile: TerminalProfile = {
 		'/contain': 'Contain: use layout/paint/style containment to reduce side effects.'
 	},
 	internalRoutes: {
-		home: '/',
-		ai: '/ai',
-		css: '/css',
-		aws: '/aws',
-		about: '/about',
-		flex: '/css/flex',
-		position: '/css/position',
-		bfc: '/css/bfc',
-		contain: '/css/contain',
-		'/': '/',
-		'/ai': '/ai',
-		'/css': '/css',
-		'/aws': '/aws',
-		'/about': '/about',
-		'/flex': '/css/flex',
-		'/position': '/css/position',
-		'/bfc': '/css/bfc',
-		'/contain': '/css/contain'
+		home: '',
+		ai: 'ai',
+		css: 'css',
+		aws: 'aws',
+		about: 'about',
+		flex: 'css/flex',
+		position: 'css/position',
+		bfc: 'css/bfc',
+		contain: 'css/contain',
+		'/': '',
+		'/ai': 'ai',
+		'/css': 'css',
+		'/aws': 'aws',
+		'/about': 'about',
+		'/flex': 'css/flex',
+		'/position': 'css/position',
+		'/bfc': 'css/bfc',
+		'/contain': 'css/contain'
 	},
 	helpExamples: [
 		'ls',
@@ -279,18 +279,18 @@ export const awsTerminalProfile: TerminalProfile = {
 			'CloudFormation: declarative infra with change sets and rollback-first deployment.'
 	},
 	internalRoutes: {
-		home: '/',
-		ai: '/ai',
-		css: '/css',
-		aws: '/aws',
-		about: '/about',
-		cloudformation: '/aws/cloudformation',
-		'/': '/',
-		'/ai': '/ai',
-		'/css': '/css',
-		'/aws': '/aws',
-		'/about': '/about',
-		'/cloudformation': '/aws/cloudformation'
+		home: '',
+		ai: 'ai',
+		css: 'css',
+		aws: 'aws',
+		about: 'about',
+		cloudformation: 'aws/cloudformation',
+		'/': '',
+		'/ai': 'ai',
+		'/css': 'css',
+		'/aws': 'aws',
+		'/about': 'about',
+		'/cloudformation': 'aws/cloudformation'
 	},
 	helpExamples: ['ls', 'cat README.md', 'cat cloudformation', 'open cloudformation'],
 	hint: 'Try: ls, cat README.md, cat cloudformation, open cloudformation',

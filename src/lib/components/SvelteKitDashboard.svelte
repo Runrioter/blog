@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser, building, dev, version } from '$app/environment';
+	import { browser, building, dev, version } from '$app/env';
 </script>
 
 <button

@@ -13,7 +13,7 @@ Purpose: this file is a compact, high-signal summary for coding agents before ma
 ## 2) Routing and Navigation Safety
 
 - Internal template links should satisfy svelte/no-navigation-without-resolve.
-- Use $app/paths helpers (resolve/base) for route-safe and GitHub Pages-safe navigation.
+- Use `resolve` from `$app/paths` for route-safe and GitHub Pages-safe navigation (`base` was removed in SvelteKit 3).
 - Do not hardcode root-relative paths that can break under BASE_PATH deployment.
 
 ## 3) Content and Layout Conventions

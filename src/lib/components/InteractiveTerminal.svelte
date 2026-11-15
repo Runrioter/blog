@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { base } from '$app/paths';
+	import { browser } from '$app/env';
+	import { resolve } from '$app/paths';
+	import type { Path } from '$app/types';
 	import { onMount } from 'svelte';
 	import '@xterm/xterm/css/xterm.css';
 	import type { Terminal } from '@xterm/xterm';
 
 	type FSMap = Record<string, string[]>;
 	type FileMap = Record<string, string>;
-	type RouteMap = Record<string, string>;
+	type RouteMap = Record<string, Path>;
 
 	let {
 		historyKey,
@@ -201,7 +202,7 @@
 
 		const mapped = internalRoutes[target] ?? internalRoutes[resolvePath(target)];
 		if (mapped) {
-			const resolved = `${base}${mapped}`;
+			const resolved = resolve(mapped);
 			window.location.href = resolved;
 			writeLine(`Navigating to ${resolved}`);
 			return;

@@ -6,11 +6,10 @@ This repository is Runrioter's personal blog, built as a static SvelteKit site.
 
 Core stack:
 
-- SvelteKit 2 with Svelte 5
+- SvelteKit 3 with Svelte 5
 - TypeScript in strict mode
 - mdsvex for `.svx` content pages
 - Tailwind CSS 4 via Vite and PostCSS
-- Static output through `@sveltejs/adapter-static`
 - Vitest for unit tests
 - Playwright for end-to-end tests
 - Prettier and ESLint for formatting and linting
@@ -60,8 +59,8 @@ Before finishing code changes, run the narrowest relevant validation. For shared
 - Prefer existing SvelteKit conventions over custom framework abstractions.
 - Keep changes small and local to the feature or bug being addressed.
 - Do not edit generated `$types` files or files inside ignored output directories.
-- Use `$lib` imports for shared components and assets under `src/lib`.
-- Use `base` from `$app/paths` for internal links that must work on GitHub Pages.
+- Use `#lib` imports (with explicit file extensions) for shared components and assets under `src/lib`.
+- Use `resolve` from `$app/paths` for internal links that must work on GitHub Pages (`base` was removed in SvelteKit 3; note route paths no longer carry a leading slash).
 
 ## Svelte and Routing Guidelines
 
@@ -112,7 +111,7 @@ The current site shell is intentionally terminal-first and has specific structur
 
 - This repo enforces `svelte/no-navigation-without-resolve`.
 - Internal nav links in Svelte templates should use `resolve(...)` where required.
-- For runtime navigation logic that must honor GitHub Pages base path, use `$app/paths` helpers (`base`, `resolve`) as appropriate.
+- For runtime navigation logic that must honor GitHub Pages base path, use `$app/paths` `resolve` as appropriate (`base` was removed in SvelteKit 3).
 
 ## Content and Tutorial Layout Conventions
 
@@ -157,7 +156,7 @@ The current site shell is intentionally terminal-first and has specific structur
 
 - Static builds output to `build/`.
 - GitHub Pages deployment is configured in `.github/workflows/gh-deploy.yml`.
-- The deploy workflow sets `BASE_PATH` to `/${{ github.event.repository.name }}`. Avoid hard-coded root-relative internal links; use SvelteKit helpers such as `$app/paths`.
+- The deploy workflow sets `BASE_PATH` to `/${{ github.event.repository.name }}` (consumed in `vite.config.ts`). Avoid hard-coded root-relative internal links; use SvelteKit helpers such as `$app/paths` `resolve`.
 - The adapter is configured with `fallback: '404.html'` and strict static output. Broken prerendered routes should be treated as build failures.
 
 ## Agent Workflow

@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('home page has expected h1', async ({ page }) => {
+test('home page renders the terminal shell', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.locator('h1')).toBeVisible();
+	// The homepage is a terminal view — assert the shell chrome and main tabs.
+	await expect(page.getByText('runrioter@blog: ~')).toBeVisible();
+	await expect(page.getByRole('navigation', { name: 'Main tabs' })).toBeVisible();
 });

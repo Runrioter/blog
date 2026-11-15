@@ -1,9 +1,9 @@
 <script lang="ts">
 	import '../app.css';
-	import Avatar from '$lib/components/Avatar.svelte';
+	import Avatar from '#lib/components/Avatar.svelte';
 	import Header from './Header.svelte';
-	import svelte from '$lib/images/svelte-logo.svg';
-	import SvelteKitDashboard from '$lib/components/SvelteKitDashboard.svelte';
+	import svelte from '#lib/images/svelte-logo.svg';
+	import SvelteKitDashboard from '#lib/components/SvelteKitDashboard.svelte';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { fade } from 'svelte/transition';
@@ -11,11 +11,11 @@
 	let { children } = $props();
 
 	const tabs = [
-		{ label: 'Home', path: '/' },
-		{ label: 'CSS', path: '/css' },
-		{ label: 'AWS', path: '/aws' },
-		{ label: 'AI', path: '/ai' },
-		{ label: 'About', path: '/about' }
+		{ label: 'Home', path: '' },
+		{ label: 'CSS', path: 'css' },
+		{ label: 'AWS', path: 'aws' },
+		{ label: 'AI', path: 'ai' },
+		{ label: 'About', path: 'about' }
 	] as const;
 
 	type TabPath = (typeof tabs)[number]['path'];
