@@ -13,7 +13,9 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"content:sync": "node scripts/sync-content.ts",
+		"content:watch": "node scripts/sync-content.ts --watch"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",

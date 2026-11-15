@@ -8,7 +8,7 @@
 </script>
 
 <div class="flex h-12 w-12 items-center justify-center">
-	<a target="_blank" {href}>
+	<a target="_blank" rel="noopener external" {href}>
 		<img class="h-8 w-8 rounded-full object-contain" src={logo} {alt} />
 	</a>
 </div>

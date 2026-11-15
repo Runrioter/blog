@@ -24,3 +24,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 draft/
+
+# Obsidian vault (source for generated (tutorials) content — see docs/content-workflow.md)
+content/

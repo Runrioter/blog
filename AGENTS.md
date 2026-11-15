@@ -117,6 +117,7 @@ The current site shell is intentionally terminal-first and has specific structur
 ## Content and Tutorial Layout Conventions
 
 - Tutorials are grouped under `src/routes/(tutorials)`.
+- Prose content for `ai`/`aws` is **generated** from the Obsidian vault in `content/` (git-ignored) via `npm run content:sync` — edit the source notes there, never the generated `+page.svx`/`toc.ts`. See `docs/content-workflow.md`.
 - AI tutorial pages use a richer layout (TOC + section tracking) in `src/routes/(tutorials)/ai/+layout.svelte` for article pages.
 - Terminal entry routes (`/ai`, `/css`, `/aws`) intentionally bypass extra prose/wrapper containers to keep spacing consistent with Home/About.
 - CSS/AWS/other tutorial content pages should keep using shared prose/layout wrappers unless a task explicitly changes IA.

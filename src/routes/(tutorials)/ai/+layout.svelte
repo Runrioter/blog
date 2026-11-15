@@ -4,19 +4,13 @@
 	import { page } from '$app/state';
 	import { onMount, tick } from 'svelte';
 	import type { Snippet } from 'svelte';
+	import { tocItems } from './toc';
 
 	let { children }: { children: Snippet } = $props();
 	let contentEl: HTMLElement | undefined;
 	let sectionItems = $state<Array<{ id: string; text: string }>>([]);
 	let activeSectionId = $state<string>('');
 	let observer: IntersectionObserver | undefined;
-
-	const tocItems = [
-		{ path: '/ai/basics', label: '基础概念' },
-		{ path: '/ai/system-instructions', label: '系统指令设计' },
-		{ path: '/ai/agent-design', label: 'Agent 行为设计' },
-		{ path: '/ai/formatting', label: '输出格式规范' }
-	] as const;
 
 	const aiEntryPath = resolve('/ai');
 	const isAiEntryRoute = () => page.url.pathname === aiEntryPath;
