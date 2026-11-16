@@ -56,8 +56,7 @@
 		}
 	}
 
-
-		// The vite-injected base constant is stable in every context; the $app/paths
+	// The vite-injected base constant is stable in every context; the $app/paths
 	// `resolve('')` it used to rely on is a relative URL during prerendering.
 	function routePath(pathname: string): string {
 		const b = __SVELTEKIT_PATHS_BASE__ ?? '';

@@ -644,7 +644,7 @@
 
 				if (/^[\x20-\x7E]$/.test(data)) {
 					// Cap the input at one display row: drop the char that would
-				// wrap it (shell `read`-like), so the line stays a single row.
+					// wrap it (shell `read`-like), so the line stays a single row.
 					const cols = inputCols();
 					if (displayWidth(`${prompt()}${commandBuffer}`) + 1 > cols) {
 						return;
@@ -653,7 +653,7 @@
 					commandBuffer = commandBuffer.slice(0, cursorPos) + data + commandBuffer.slice(cursorPos);
 					cursorPos += data.length;
 					// Append (or, when editing mid-line, append + overwrite the rest
-				// so the row always mirrors the buffer).
+					// so the row always mirrors the buffer).
 					term.write(data + rest);
 				}
 			});

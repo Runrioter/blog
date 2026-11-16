@@ -87,10 +87,11 @@ test('typing a wrapped line does not balloon the terminal history', async ({ pag
 	// wrap edge the overflow lands on fresh rows, so the visible buffer fills
 	// with junk prompt lines. The fixed in-place redraw keeps the input in its
 	// original block (one prompt line, wrapped).
-	const promptRows = await page.evaluate(() =>
-		[...document.querySelectorAll('.terminal-host .xterm-rows > div')].filter((r) =>
-			(r.textContent ?? '').includes('~ $')
-		).length
+	const promptRows = await page.evaluate(
+		() =>
+			[...document.querySelectorAll('.terminal-host .xterm-rows > div')].filter((r) =>
+				(r.textContent ?? '').includes('~ $')
+			).length
 	);
 	expect(promptRows).toBeLessThan(6);
 });
@@ -99,8 +100,8 @@ test('dragging the divider resizes the terminal pane', async ({ page }) => {
 	await page.goto('/');
 	await page.waitForSelector('.terminal-host .xterm-rows > div');
 	const readPct = () =>
-		page.evaluate(() =>
-			parseFloat((document.querySelector('.agent-terminal') as HTMLElement).style.width) || 0
+		page.evaluate(
+			() => parseFloat((document.querySelector('.agent-terminal') as HTMLElement).style.width) || 0
 		);
 	const before = await readPct();
 	const box = (await page.locator('.pane-divider').boundingBox()) ?? undefined;
