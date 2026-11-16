@@ -83,10 +83,17 @@
 		if (!term) return;
 		const { clientWidth, clientHeight } = host;
 		if (clientWidth === 0 || clientHeight === 0) return;
-		const row = host.querySelector('.xterm-rows > div') as HTMLElement | null;
-		const char = row?.querySelector('span');
-		const cellW = char ? char.getBoundingClientRect().width : 8;
-		const cellH = row ? row.getBoundingClientRect().height : 17;
+		// Cell width comes from xterm's own width-measure element (N identical
+		// characters → width/length = exact per-cell width for the loaded font).
+		// A rendered row span must NOT be used: xterm packs a whole run of
+		// same-styled characters into one span, which over-measures the cell
+		// and shrinks the grid (every line then clips at the pane edge).
+		const measure = host.querySelector('.xterm-char-measure-element');
+		const measureText = measure?.textContent ?? '';
+		const row = host.querySelector('.xterm-rows > div');
+		if (!measure || !measureText || !row) return;
+		const cellW = measure.getBoundingClientRect().width / measureText.length;
+		const cellH = row.getBoundingClientRect().height;
 		if (cellW <= 0 || cellH <= 0) return;
 		const cols = Math.max(2, Math.floor(clientWidth / cellW));
 		const rows = Math.max(1, Math.floor(clientHeight / cellH));
@@ -98,14 +105,30 @@
 	 * clicking a link, so the terminal and the doc stay in sync visually).
 	 * Preserves any in-progress input buffer.
 	 */
-	function echoCommand(line: string) {
-		if (!term) return;
-		term.write('\x1b[2K\r');
-		writeLine(`${prompt()}${line}`);
-		writeLine();
-		redrawInput();
+	/** Approximate display width of a string (CJK / fullwidth / emoji = 2 cells). */
+	function displayWidth(text: string): number {
+		let w = 0;
+		for (const ch of text) {
+			const cp = ch.codePointAt(0) ?? 0;
+			const wide =
+				(cp >= 0x1100 && cp <= 0x115f) ||
+				(cp >= 0x2e80 && cp <= 0xa4cf) ||
+				(cp >= 0xac00 && cp <= 0xd7a3) ||
+				(cp >= 0xf900 && cp <= 0xff60) ||
+				cp >= 0x1f300;
+			w += wide ? 2 : 1;
+		}
+		return w;
 	}
 
+	/** One display row the input may occupy (prompt + buffer). */
+	function inputCols(): number {
+		return Math.max(1, term?.cols ?? 80);
+	}
+
+	/** Redraw the in-progress input (prompt + buffer) on the current row.
+	 * Input is capped at one display row, so a single erase-line + rewrite is
+	 * always correct regardless of the cursor column. */
 	function redrawInput() {
 		if (!term) return;
 		term.write(`\x1b[2K\r${prompt()}${commandBuffer}`);
@@ -113,6 +136,14 @@
 		if (rightChars > 0) {
 			term.write(`\x1b[${rightChars}D`);
 		}
+	}
+
+	function echoCommand(line: string) {
+		if (!term) return;
+		term.write('\x1b[2K\r');
+		writeLine(`${prompt()}${line}`);
+		writeLine();
+		redrawInput();
 	}
 
 	function setInput(value: string) {
@@ -441,6 +472,8 @@
 			if (unmounted) return;
 
 			term = new mod.Terminal({
+				// xterm 6 always wraps lines at the grid edge (the v5 wordWrap
+				// option is gone), so the only lever is a correct column fit.
 				allowTransparency: true,
 				convertEol: true,
 				cursorBlink: true,
@@ -475,22 +508,42 @@
 			resizeObserver = new ResizeObserver(() => fit());
 			resizeObserver.observe(host);
 
-			// The mono font loads asynchronously; the cell size can change after
-			// layout without changing the host box, which ResizeObserver misses.
+			// The mono font loads asynchronously; its cell width can change after
+			// layout without changing the host box (which ResizeObserver misses).
+			// Re-fit on font ready, and keep settling for a couple of seconds so
+			// a late font swap re-sizes the grid instead of leaving it narrow
+			// (clipped lines) or wide (overflow past the pane).
 			document.fonts?.ready.then(() => fit());
+			let settleFrames = 0;
+			const settle = () => {
+				fit();
+				if (settleFrames < 180) {
+					settleFrames += 1;
+					requestAnimationFrame(settle);
+				}
+			};
+			requestAnimationFrame(settle);
 
 			disposable = term.onData(async (data) => {
 				if (!term) return;
 
+				// Input is capped at one display row and echoed with append/erase
+				// primitives (never a full multi-row rewrite), so lines can grow to
+				// the pane edge and wrap visually without corrupting the buffer.
+
 				if (data === '\u0001') {
+					// Ctrl-A: home
+					if (cursorPos === 0) return;
 					cursorPos = 0;
-					redrawInput();
+					term.write('\x1b[G');
 					return;
 				}
 
 				if (data === '\u0005') {
+					// Ctrl-E: end
+					if (cursorPos >= commandBuffer.length) return;
 					cursorPos = commandBuffer.length;
-					redrawInput();
+					term.write('\x1b[400C');
 					return;
 				}
 
@@ -503,14 +556,14 @@
 				if (data === '\u001b[D') {
 					if (cursorPos === 0) return;
 					cursorPos -= 1;
-					redrawInput();
+					term.write('\x1b[1D');
 					return;
 				}
 
 				if (data === '\u001b[C') {
 					if (cursorPos >= commandBuffer.length) return;
 					cursorPos += 1;
-					redrawInput();
+					term.write('\x1b[1C');
 					return;
 				}
 
@@ -543,6 +596,8 @@
 				}
 
 				if (data === '\r') {
+					// Return the cursor to the end of the input before consuming it.
+					term.write('\x1b[400C');
 					const cmd = commandBuffer.trim();
 					term.write('\r\n');
 					commandBuffer = '';
@@ -563,6 +618,8 @@
 				}
 
 				if (data === '\u0003') {
+					// ^C: erase the row, interrupt, fresh prompt.
+					term.write('\x1b[2K\r');
 					commandBuffer = '';
 					cursorPos = 0;
 					term.write('^C\r\n');
@@ -574,21 +631,30 @@
 					if (cursorPos === 0) return;
 					commandBuffer = commandBuffer.slice(0, cursorPos - 1) + commandBuffer.slice(cursorPos);
 					cursorPos -= 1;
-					redrawInput();
+					term.write('\x1b[1D\x1b[P');
 					return;
 				}
 
 				if (data === '\u001b[3~') {
 					if (cursorPos >= commandBuffer.length) return;
 					commandBuffer = commandBuffer.slice(0, cursorPos) + commandBuffer.slice(cursorPos + 1);
-					redrawInput();
+					term.write('\x1b[P');
 					return;
 				}
 
 				if (/^[\x20-\x7E]$/.test(data)) {
+					// Cap the input at one display row: drop the char that would
+				// wrap it (shell `read`-like), so the line stays a single row.
+					const cols = inputCols();
+					if (displayWidth(`${prompt()}${commandBuffer}`) + 1 > cols) {
+						return;
+					}
+					const rest = commandBuffer.slice(cursorPos + data.length);
 					commandBuffer = commandBuffer.slice(0, cursorPos) + data + commandBuffer.slice(cursorPos);
 					cursorPos += data.length;
-					redrawInput();
+					// Append (or, when editing mid-line, append + overwrite the rest
+				// so the row always mirrors the buffer).
+					term.write(data + rest);
 				}
 			});
 		};

@@ -39,3 +39,63 @@ test('terminal open command navigates', async ({ page }) => {
 	// {#key} + fade keeps the outgoing doc in the DOM for 140ms, so filter to the new one
 	await expect(page.locator('.agent-docs h1').filter({ hasText: 'About' })).toHaveText('About');
 });
+
+test('long terminal lines wrap inside the pane instead of clipping', async ({ page }) => {
+	await page.goto('/');
+	await page.waitForSelector('.terminal-host .xterm-rows > div');
+	await page.locator('.agent-terminal').click();
+	await page.keyboard.type('a'.repeat(120));
+	await page.keyboard.press('Enter');
+	await page.waitForTimeout(300);
+	// The grid must not be wider than the pane: if the column fit is wrong the
+	// screen overflows the host and every line tail gets clipped.
+	const dims = await page.evaluate(() => {
+		const host = document.querySelector('.terminal-host');
+		const screen = host?.querySelector('.xterm-screen');
+		return { host: host?.clientWidth ?? 0, screen: screen?.getBoundingClientRect().width ?? 0 };
+	});
+	expect(dims.screen).toBeLessThanOrEqual(dims.host + 2);
+});
+
+test('typing a wrapped line does not balloon the terminal history', async ({ page }) => {
+	await page.goto('/');
+	await page.waitForSelector('.terminal-host .xterm-rows > div');
+	await page.locator('.agent-terminal').click();
+	await page.keyboard.type('a'.repeat(120));
+	await page.waitForTimeout(300);
+	// A redraw bug re-writes the prompt+buffer on every keystroke; past the
+	// wrap edge the overflow lands on fresh rows, so the visible buffer fills
+	// with junk prompt lines. The fixed in-place redraw keeps the input in its
+	// original block (one prompt line, wrapped).
+	const promptRows = await page.evaluate(() =>
+		[...document.querySelectorAll('.terminal-host .xterm-rows > div')].filter((r) =>
+			(r.textContent ?? '').includes('~ $')
+		).length
+	);
+	expect(promptRows).toBeLessThan(6);
+});
+
+test('dragging the divider resizes the terminal pane', async ({ page }) => {
+	await page.goto('/');
+	await page.waitForSelector('.terminal-host .xterm-rows > div');
+	const readPct = () =>
+		page.evaluate(() =>
+			parseFloat((document.querySelector('.agent-terminal') as HTMLElement).style.width) || 0
+		);
+	const before = await readPct();
+	const box = (await page.locator('.pane-divider').boundingBox()) ?? undefined;
+	if (!box) throw new Error('divider not found');
+	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(box.x + box.width / 2 + 120, box.y + box.height / 2, { steps: 8 });
+	await page.mouse.up();
+	const after = await readPct();
+	expect(after).toBeGreaterThan(before);
+	// after the drag the terminal must still fit its (new) pane width
+	const dims = await page.evaluate(() => {
+		const host = document.querySelector('.terminal-host');
+		const screen = host?.querySelector('.xterm-screen');
+		return { host: host?.clientWidth ?? 0, screen: screen?.getBoundingClientRect().width ?? 0 };
+	});
+	expect(dims.screen).toBeLessThanOrEqual(dims.host + 2);
+});

@@ -23,6 +23,39 @@
 	let prevPath = $state(page.url.pathname);
 	let api: { echoCommand: (line: string) => void } | null = $state(null);
 
+	// Terminal pane width, in percent of the content row. Draggable via the
+	// divider between the panes; the xterm re-fits as it resizes.
+	let terminalPct = $state(42);
+	let dragging = $state(false);
+	let body: HTMLElement;
+
+	const clampPct = (v: number) => Math.min(70, Math.max(25, v));
+
+	function startDrag(e: PointerEvent) {
+		if (!browser || !body) return;
+		e.preventDefault();
+		dragging = true;
+		(e.target as HTMLElement).setPointerCapture(e.pointerId);
+	}
+
+	function moveDrag(e: PointerEvent) {
+		if (!dragging || !body) return;
+		const rect = body.getBoundingClientRect();
+		if (rect.width <= 0) return;
+		terminalPct = clampPct(((e.clientX - rect.left) / rect.width) * 100);
+	}
+
+	function endDrag() {
+		dragging = false;
+	}
+
+	function nudgeDrag(e: KeyboardEvent) {
+		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+			e.preventDefault();
+			terminalPct = clampPct(terminalPct + (e.key === 'ArrowLeft' ? -2 : 2));
+		}
+	}
+
 	// kit 3: resolve('') is the base-prefixed root URL ("/" in dev, "/blog/" on Pages).
 	const rootUrl = resolve('');
 
@@ -77,8 +110,8 @@
 			<span class="agent-badge" aria-hidden="true">agent</span>
 		</div>
 
-		<div class="agent-body">
-			<aside class="agent-terminal" aria-label="Command terminal">
+		<div class="agent-body" class:dragging bind:this={body}>
+			<aside class="agent-terminal" aria-label="Command terminal" style:width={`${terminalPct}%`}>
 				<InteractiveTerminal
 					historyKey={shellTerminalProfile.historyKey}
 					introLines={shellTerminalProfile.introLines(now)}
@@ -91,6 +124,16 @@
 					onSelfNavigate={() => (navSource = 'terminal')}
 				/>
 			</aside>
+			<button
+				class="pane-divider"
+				aria-label="Resize terminal and document panes"
+				onpointerdown={startDrag}
+				onpointermove={moveDrag}
+				onpointerup={endDrag}
+				onkeydown={nudgeDrag}
+			>
+				<span class="divider-grip" aria-hidden="true"></span>
+			</button>
 
 			<div class="agent-docs">
 				{#key page.url.pathname}
@@ -206,14 +249,58 @@
 		background: #0d1117;
 	}
 
+	.agent-body.dragging {
+		cursor: col-resize;
+		user-select: none;
+	}
+
+	.agent-body.dragging * {
+		user-select: none !important;
+	}
+
 	.agent-terminal {
 		width: 42%;
-		min-width: 280px;
-		max-width: 34rem;
+		min-width: 220px;
 		min-height: 0;
 		overflow: hidden;
 		border-right: 1px solid #30363d;
 		display: flex;
+	}
+
+	.pane-divider {
+		width: 6px;
+		flex-shrink: 0;
+		min-height: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 3px;
+		cursor: col-resize;
+		background: transparent;
+		position: relative;
+		touch-action: none;
+	}
+
+	.pane-divider .divider-grip {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 3px;
+		height: 2.25rem;
+		border-radius: 2px;
+		background: #3d444d;
+	}
+
+	.pane-divider:hover .divider-grip,
+	.pane-divider:focus-visible .divider-grip,
+	.agent-body.dragging .pane-divider .divider-grip {
+		background: #3fb950;
+		height: 3.5rem;
+	}
+
+	.pane-divider:focus-visible {
+		outline: none;
 	}
 
 	.agent-docs {
@@ -221,9 +308,14 @@
 		min-width: 0;
 		min-height: 0;
 		overflow-y: auto;
+		overflow-x: hidden;
 		scrollbar-width: thin;
 		scrollbar-color: #3d444d #0d1117;
 		background: #0d1117;
+	}
+
+	.agent-docs :global(:is(p, li, h1, h2, h3, h4, td, th)) {
+		overflow-wrap: anywhere;
 	}
 
 	.doc-scroll {
@@ -262,13 +354,17 @@
 		}
 
 		.agent-terminal {
-			width: 100%;
-			max-width: none;
+			width: 100% !important;
+			min-width: 0;
 			height: 45vh;
 			min-height: 200px;
 			overflow: hidden;
 			border-right: none;
 			border-bottom: 1px solid #30363d;
+		}
+
+		.pane-divider {
+			display: none;
 		}
 
 		.agent-docs {
