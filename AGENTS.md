@@ -74,66 +74,45 @@ Before finishing code changes, run the narrowest relevant validation. For shared
 
 ## Current IA and UI Architecture (Important)
 
-The current site shell is intentionally terminal-first and has specific structure constraints.
+The site shell is a code-agent style TUI inside a macOS-like terminal window.
 
-- There is exactly one global terminal shell in `src/routes/+layout.svelte`.
-- The global shell owns:
-  - terminal window chrome (status dots + title)
-  - main navigation tabs (`Home`, `CSS`, `AWS`, `AI`, `About`)
-  - route content container (`{@render children()}`)
-- Do not introduce a second terminal frame around page-level content.
-- Do not add another top-level nav outside the terminal header unless user explicitly asks.
+```
+.terminal-shell (one window: dots + title + path indicator)
+├── left pane  .agent-terminal  — the ONLY xterm terminal (persistent)
+└── right pane .agent-docs      — current route rendered as a document
+```
 
-### Terminal Shell Visual Contract
+### Two-Pane Agent Shell Rules
 
-- Global terminal shell styling in `src/routes/+layout.svelte` should preserve macOS-like window shape:
-  - rounded corners (`border-radius`)
-  - clipped content (`overflow: hidden`)
-  - subtle layered shadow/highlight for window depth
-- Avoid changing these shell-level window cues unless the task explicitly asks for visual redesign.
+- `src/routes/+layout.svelte` is the only file that defines terminal window chrome (macOS dots, title, rounded corners, clipped content, layered shadow). Preserve these cues; do not add a second window frame.
+- The xterm terminal is rendered exactly once, in the global layout left pane. Page routes must never render `InteractiveTerminal` or any other terminal/xterm of their own.
+- The left terminal is persistent across routes: do NOT wrap it in `{#key page.url.pathname}` or route it through per-page components. Navigation must not reset or remount the terminal session.
+- The right pane renders `{@render children()}` (the current route) inside `.agent-docs`; the macOS window is the only outer frame.
+- Keep the xterm pane clipped (`.agent-terminal { overflow: hidden }` — xterm's renderer can overflow its container and intercept clicks meant for the document pane).
+- On mobile (<820px) the panes stack vertically (terminal on top, ~45vh).
+- The global footer (SvelteKit dashboard + avatars) stays below the window.
 
-### Single-Terminal Rule
+### Navigation Contract
 
-- Avoid nested terminal containers ("terminal inside terminal").
-- Page routes should render content into the global terminal content area, not recreate full window chrome.
-- The homepage (`src/routes/+page.svelte`) uses `@xterm/xterm`, but should only render the xterm host/content body under the shared shell.
-
-### Tabs and Header Behavior
-
-- Main tabs must remain in the global terminal header.
-- Active tab highlighting should continue to follow current route.
-- Header path indicator should reflect current pathname and stay lightweight.
-- Keep mobile behavior intact:
-  - tabs can scroll horizontally
-  - non-essential header text can be hidden on small screens
+- No top-level tab bar exists. Navigation happens by (a) clicking links in the document pane, or (b) terminal commands (`open <route>`, `cd`).
+- Terminal navigation uses SvelteKit `goto()` (soft navigation — real URL changes, prerender-compatible). Never `window.location.href`.
+- Document-pane link clicks echo a pseudo command line into the terminal (the layout watches `page.url.pathname` and calls the terminal's `echoCommand` API); terminal-initiated navigation and back/forward are intentionally not echoed. Do not remove this sync behavior without a reason.
+- Route/URL structure is unchanged and is the source of truth for the right pane: `/` = welcome + table of contents, `/about` = about doc, `/ai`/`/css`/`/aws` = section TOC docs (landing pages), articles render their generated/handwritten content.
 
 ### Route/Link Safety
 
 - This repo enforces `svelte/no-navigation-without-resolve`.
-- Internal nav links in Svelte templates should use `resolve(...)` where required.
-- For runtime navigation logic that must honor GitHub Pages base path, use `$app/paths` `resolve` as appropriate (`base` was removed in SvelteKit 3).
+- Internal links in Svelte templates should use `resolve(...)`; external anchors need `rel="noopener external"`.
+- The terminal profile (`#lib/terminal-profiles.ts` → `shellTerminalProfile`) is the source of truth for the xterm session: `historyKey`, `introLines(date)`, `hint`, `dirs`, `files`, `internalRoutes`, `helpExamples`. Its `dirs`/`files`/`internalRoutes` mirror the real route tree — keep them in sync when routes are added or renamed.
+- Keep route page files thin (title/meta + content), not terminal config blobs.
 
 ## Content and Tutorial Layout Conventions
 
-- Tutorials are grouped under `src/routes/(tutorials)`.
+- Tutorials are grouped under `src/routes/(tutorials)` (route group — no URL segment).
 - Prose content for `ai`/`aws` is **generated** from the Obsidian vault in `content/` (git-ignored) via `npm run content:sync` — edit the source notes there, never the generated `+page.svx`/`toc.ts`. See `docs/content-workflow.md`.
-- AI tutorial pages use a richer layout (TOC + section tracking) in `src/routes/(tutorials)/ai/+layout.svelte` for article pages.
-- Terminal entry routes (`/ai`, `/css`, `/aws`) intentionally bypass extra prose/wrapper containers to keep spacing consistent with Home/About.
-- CSS/AWS/other tutorial content pages should keep using shared prose/layout wrappers unless a task explicitly changes IA.
-- Shared prose styling lives in `src/lib/components/DocProse.svelte`; reuse instead of duplicating typography wrappers.
-
-### Terminal Entry Page Configuration
-
-- Terminal entry pages are configuration-driven from `src/lib/terminal-profiles.ts`.
-- `TerminalProfile` is the source of truth and owns at least:
-  - `historyKey`
-  - `introLines(date)`
-  - `hint`
-  - `dirs`
-  - `files`
-  - `internalRoutes`
-  - `helpExamples`
-- Keep route page files thin; avoid inlining long terminal config blobs in page components.
+- Section landing pages (`/ai`, `/css`, `/aws`) are table-of-contents documents built with `#lib/components/SectionToc.svelte`; the AI/AWS lists come from the generated `toc.ts`, the CSS list is handwritten (CSS tutorials are interactive, not vault-generated).
+- Article pages reuse `#lib/components/DocProse.svelte` for prose styling; do not duplicate typography wrappers.
+- There are no per-section route layouts; both panes come from the global layout.
 
 ## Styling Guidelines
 
@@ -170,26 +149,12 @@ The current site shell is intentionally terminal-first and has specific structur
 
 ## Regression Checklist for Agents
 
-Before finishing UI/layout work, quickly verify all of the following still hold:
+Before finishing UI/layout work, verify all of the following still hold:
 
-- Only one terminal shell exists at app-frame level (`src/routes/+layout.svelte`).
-- Tabs remain in terminal header, not as a separate outer/inner duplicated bar.
-- Homepage still mounts xterm and does not reintroduce independent terminal chrome.
-- Internal navigation still passes lint rules and works with GitHub Pages base path.
-- Run `npm run lint` and `npm run check` for layout/navigation/style changes.
-
-### Terminal Regression Checklist (Minimum)
-
-Before merging terminal-related changes, verify these explicit safeguards:
-
-- No nested terminal frame:
-  - `src/routes/+layout.svelte` is the only file that defines terminal window chrome.
-  - Entry route pages do not add another outer frame/chrome.
-- Entry route spacing parity:
-  - `/`, `/about`, `/ai`, `/css`, `/aws` entry pages render with consistent shell spacing.
-  - Tutorial entry routes (`/ai`, `/css`, `/aws`) still bypass extra prose wrappers intended for article pages.
-- Profile-driven config integrity:
-  - Terminal entry pages do not inline large command/file maps.
-  - `src/lib/terminal-profiles.ts` remains the source of truth for `historyKey`, `introLines(date)`, `hint`, `dirs`, `files`, `internalRoutes`, `helpExamples`.
-- macOS shell cues preserved:
-  - Shell keeps rounded corners, clipped content, and subtle depth/highlight styling unless redesign is explicitly requested.
+- Exactly one terminal window at app-frame level (`src/routes/+layout.svelte`): dots + title + path indicator, rounded corners, clipped content, subtle depth cues.
+- The xterm terminal mounts exactly once (global layout left pane) and persists across routes; no page renders a terminal of its own.
+- The right document pane renders the current route; home shows the welcome + TOC.
+- Navigation works both ways: doc links (with terminal echo) and terminal `open` (no echo, `goto()`).
+- `.agent-terminal` keeps `overflow: hidden` (xterm overflow intercepts clicks on the doc pane — covered by the e2e TOC-click test).
+- Internal navigation still passes lint rules and works with the GitHub Pages base path.
+- Run `npm run lint`, `npm run check`, and `npm run test:e2e` for layout/navigation changes.

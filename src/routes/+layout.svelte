@@ -2,33 +2,60 @@
 	import '../app.css';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Header from './Header.svelte';
+	import InteractiveTerminal from '#lib/components/InteractiveTerminal.svelte';
+	import { shellTerminalProfile } from '#lib/terminal-profiles.ts';
 	import svelte from '#lib/images/svelte-logo.svg';
 	import SvelteKitDashboard from '#lib/components/SvelteKitDashboard.svelte';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { fade } from 'svelte/transition';
+	import { browser } from '$app/env';
 
 	let { children } = $props();
 
-	const tabs = [
-		{ label: 'Home', path: '' },
-		{ label: 'CSS', path: 'css' },
-		{ label: 'AWS', path: 'aws' },
-		{ label: 'AI', path: 'ai' },
-		{ label: 'About', path: 'about' }
-	] as const;
+	const now = new Date().toISOString().slice(0, 10);
 
-	type TabPath = (typeof tabs)[number]['path'];
+	type NavSource = 'terminal' | 'history' | null;
 
-	const isActive = (path: TabPath) => {
-		const href = resolve(path);
-		if (href === '/') return page.url.pathname === href;
-		return page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);
-	};
+	// Where the last navigation came from, so the terminal only echoes
+	// document-pane link clicks (never its own commands or back/forward).
+	let navSource: NavSource = $state(null);
+	let prevPath = $state(page.url.pathname);
+	let api: { echoCommand: (line: string) => void } | null = $state(null);
+
+	// kit 3: resolve('') is the base-prefixed root URL ("/" in dev, "/blog/" on Pages).
+	const rootUrl = resolve('');
+
+	function routePath(pathname: string): string {
+		if (pathname === rootUrl || pathname === rootUrl.replace(/\/$/, '')) return '';
+		if (pathname.startsWith(rootUrl)) return pathname.slice(rootUrl.length);
+		return pathname.replace(/^\//, '');
+	}
+
+	$effect(() => {
+		const onPop = () => {
+			navSource = 'history';
+		};
+		if (browser) addEventListener('popstate', onPop);
+		return () => browser && removeEventListener('popstate', onPop);
+	});
+
+	$effect(() => {
+		const current = page.url.pathname;
+		if (current === prevPath) return;
+		prevPath = current;
+		if (navSource !== null) {
+			navSource = null;
+			return;
+		}
+		const target = routePath(current);
+		api?.echoCommand(`open ${target === '' ? 'home' : target}`);
+	});
 
 	const pathnameLabel = (pathname: string) => {
-		if (pathname === '/') return '/';
-		return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+		const root = rootUrl.replace(/\/$/, '');
+		const rel = routePath(pathname);
+		return rel === '' ? '~' : `~/${rel}`;
 	};
 </script>
 
@@ -48,31 +75,37 @@
 					{pathnameLabel(page.url.pathname)}
 				</p>
 			{/key}
-			<nav class="terminal-tabs" aria-label="Main tabs">
-				{#each tabs as tab (tab.path)}
-					<a
-						href={resolve(tab.path)}
-						aria-current={isActive(tab.path) ? 'page' : undefined}
-						class="tab"
-					>
-						{tab.label}
-					</a>
-				{/each}
-			</nav>
+			<span class="agent-badge" aria-hidden="true">agent</span>
 		</div>
 
-		<div class="terminal-content">
-			{#key page.url.pathname}
-				<div class="terminal-pane">
-					{@render children()}
-				</div>
-			{/key}
+		<div class="agent-body">
+			<aside class="agent-terminal" aria-label="Command terminal">
+				<InteractiveTerminal
+					historyKey={shellTerminalProfile.historyKey}
+					introLines={shellTerminalProfile.introLines(now)}
+					hint={shellTerminalProfile.hint}
+					dirs={shellTerminalProfile.dirs}
+					files={shellTerminalProfile.files}
+					internalRoutes={shellTerminalProfile.internalRoutes}
+					helpExamples={shellTerminalProfile.helpExamples}
+					registerApi={(a) => (api = a)}
+					onSelfNavigate={() => (navSource = 'terminal')}
+				/>
+			</aside>
+
+			<div class="agent-docs">
+				{#key page.url.pathname}
+					<article class="doc-scroll" transition:fade={{ duration: 140 }}>
+						{@render children()}
+					</article>
+				{/key}
+			</div>
 		</div>
 	</section>
 
 	<footer class="flex w-full items-center justify-center">
 		<SvelteKitDashboard />
-		<Avatar logo={svelte} alt="SvelteKit" href="https://github.com/sveltejs/kit" />
+		<Avatar logo={svelte} alt="SvelteKit" href="https://sveltejs.dev" />
 	</footer>
 </div>
 
@@ -80,6 +113,7 @@
 	.app {
 		display: flex;
 		flex-direction: column;
+		height: 100vh;
 		min-height: 100vh;
 		gap: 0.5rem;
 	}
@@ -153,75 +187,63 @@
 		white-space: nowrap;
 	}
 
-	.terminal-tabs {
-		display: flex;
-		gap: 0.14rem;
+	.agent-badge {
 		margin-left: auto;
-		overflow-x: auto;
-		scrollbar-width: thin;
-		scrollbar-color: #3d444d #161b22;
-		-webkit-overflow-scrolling: touch;
-		padding-block: 0.04rem;
-	}
-
-	.tab {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.22rem 0.56rem;
-		border: 1px solid #30363d;
-		background: #161b22;
-		color: #8b949e;
+		padding: 0.1rem 0.42rem;
+		border: 1px solid #238636;
+		border-radius: 999px;
+		background: rgba(63, 185, 80, 0.12);
+		color: #3fb950;
 		font-family: var(--font-mono);
-		font-size: 0.74rem;
-		text-decoration: none;
-		white-space: nowrap;
-		line-height: 1.2;
-		border-radius: 0;
-		transition:
-			color 120ms ease,
-			background-color 120ms ease,
-			border-color 120ms ease;
-		animation: tabIn 220ms ease-out both;
+		font-size: 0.66rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 
-	.tab:nth-child(2) {
-		animation-delay: 20ms;
-	}
-
-	.tab:nth-child(3) {
-		animation-delay: 40ms;
-	}
-
-	.tab:nth-child(4) {
-		animation-delay: 60ms;
-	}
-
-	.tab:nth-child(5) {
-		animation-delay: 80ms;
-	}
-
-	.tab:hover {
-		text-decoration: none;
-		color: #c9d1d9;
-		border-color: #4a535d;
-	}
-
-	.tab[aria-current='page'] {
+	.agent-body {
+		display: flex;
+		flex: 1;
+		min-height: 0;
 		background: #0d1117;
-		color: #c9d1d9;
-		border-color: #3d444d;
-		box-shadow: inset 0 2px 0 #58a6ff;
 	}
 
-	.tab:focus-visible {
-		outline: 2px solid #58a6ff;
-		outline-offset: 1px;
+	.agent-terminal {
+		width: 42%;
+		min-width: 280px;
+		max-width: 34rem;
+		min-height: 0;
+		overflow: hidden;
+		border-right: 1px solid #30363d;
+		display: flex;
+	}
+
+	.agent-docs {
+		flex: 1;
+		min-width: 0;
+		min-height: 0;
+		overflow-y: auto;
+		scrollbar-width: thin;
+		scrollbar-color: #3d444d #0d1117;
+		background: #0d1117;
+	}
+
+	.doc-scroll {
+		max-width: 52rem;
+		margin: 0 auto;
+		padding: 1.4rem 1.8rem 3rem;
+	}
+
+	footer {
+		padding-bottom: 0.35rem;
 	}
 
 	@media (max-width: 820px) {
-		.terminal-header {
-			padding: 0.34rem 0.45rem;
-			gap: 0.4rem;
+		.app {
+			height: auto;
+		}
+
+		.terminal-shell {
+			margin: 0 0.35rem;
 		}
 
 		.terminal-title {
@@ -232,40 +254,30 @@
 			display: none;
 		}
 
-		.terminal-tabs {
-			margin-left: 0;
-			flex: 1;
+		.agent-badge {
+			margin-left: auto;
 		}
 
-		.tab {
-			padding: 0.24rem 0.5rem;
+		.agent-body {
+			flex-direction: column;
 		}
-	}
 
-	.terminal-content {
-		flex: 1;
-		min-height: 0;
-		background: #0d1117;
-	}
-
-	.terminal-pane {
-		min-height: 100%;
-	}
-
-	@keyframes tabIn {
-		from {
-			opacity: 0;
-			transform: translateY(2px);
+		.agent-terminal {
+			width: 100%;
+			max-width: none;
+			height: 45vh;
+			min-height: 200px;
+			overflow: hidden;
+			border-right: none;
+			border-bottom: 1px solid #30363d;
 		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.tab {
-			animation: none;
+		.agent-docs {
+			overflow-y: visible;
+		}
+
+		.doc-scroll {
+			padding: 1rem 1rem 2rem;
 		}
 	}
 </style>

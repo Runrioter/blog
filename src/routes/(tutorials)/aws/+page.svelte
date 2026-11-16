@@ -1,21 +1,15 @@
 <script lang="ts">
-	import InteractiveTerminal from '#lib/components/InteractiveTerminal.svelte';
-	import { awsTerminalProfile } from '#lib/terminal-profiles.ts';
-
-	const now = new Date().toISOString().slice(0, 10);
+	import SectionToc from '#lib/components/SectionToc.svelte';
+	import { tocItems } from './toc';
 </script>
 
 <svelte:head>
-	<title>AWS</title>
-	<meta name="description" content="About AWS" />
+	<title>AWS 基础设施 | Runrioter Blog</title>
+	<meta name="description" content="AWS 基础设施笔记：可部署、可回滚的 IaC 实践。" />
 </svelte:head>
 
-<InteractiveTerminal
-	historyKey={awsTerminalProfile.historyKey}
-	introLines={awsTerminalProfile.introLines(now)}
-	hint={awsTerminalProfile.hint}
-	dirs={awsTerminalProfile.dirs}
-	files={awsTerminalProfile.files}
-	internalRoutes={awsTerminalProfile.internalRoutes}
-	helpExamples={awsTerminalProfile.helpExamples}
+<SectionToc
+	title="AWS 基础设施"
+	description="面向部署与回滚的 AWS 实践笔记：从 CloudFormation 开始。"
+	items={tocItems}
 />

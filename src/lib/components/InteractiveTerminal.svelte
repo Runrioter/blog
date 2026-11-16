@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { resolve } from '$app/paths';
+	import { goto } from '$app/navigation';
 	import type { Path } from '$app/types';
 	import { onMount } from 'svelte';
 	import '@xterm/xterm/css/xterm.css';
@@ -18,7 +19,9 @@
 		files,
 		internalRoutes,
 		whoamiLine = 'runrioter - developer, writer, builder',
-		helpExamples = ['whoami', 'cat README.md', 'open github']
+		helpExamples = ['whoami', 'cat README.md', 'open github'],
+		registerApi = () => {},
+		onSelfNavigate = () => {}
 	}: {
 		historyKey: string;
 		introLines?: string[];
@@ -28,6 +31,8 @@
 		internalRoutes: RouteMap;
 		whoamiLine?: string;
 		helpExamples?: string[];
+		registerApi?: (api: { echoCommand: (line: string) => void }) => void;
+		onSelfNavigate?: () => void;
 	} = $props();
 
 	let host: HTMLDivElement;
@@ -65,6 +70,19 @@
 
 	function writeLine(text = '') {
 		term?.writeln(text);
+	}
+
+	/**
+	 * Echo a pseudo user line (used when the document pane navigates by
+	 * clicking a link, so the terminal and the doc stay in sync visually).
+	 * Preserves any in-progress input buffer.
+	 */
+	function echoCommand(line: string) {
+		if (!term) return;
+		term.write('\x1b[2K\r');
+		writeLine(`${prompt()}${line}`);
+		writeLine();
+		redrawInput();
 	}
 
 	function redrawInput() {
@@ -203,7 +221,8 @@
 		const mapped = internalRoutes[target] ?? internalRoutes[resolvePath(target)];
 		if (mapped) {
 			const resolved = resolve(mapped);
-			window.location.href = resolved;
+			void goto(resolved);
+			onSelfNavigate();
 			writeLine(`Navigating to ${resolved}`);
 			return;
 		}
@@ -421,6 +440,7 @@
 
 			term.open(host);
 			term.focus();
+			registerApi({ echoCommand });
 			for (const line of introLines) {
 				writeLine(line);
 			}
@@ -563,22 +583,25 @@
 	.interactive-terminal {
 		--muted: #6e7681;
 		flex: 1;
+		height: 100%;
+		min-height: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
-		padding: 0.9rem;
+		gap: 0.6rem;
+		padding: 0.5rem;
 	}
 
 	.terminal-host {
-		height: min(72vh, 42rem);
-		padding: 0.25rem 0.4rem;
+		flex: 1;
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	.hint {
 		margin: 0 0.25rem;
 		color: var(--muted);
 		font-family: var(--font-mono);
-		font-size: 0.8rem;
+		font-size: 0.78rem;
 	}
 
 	:global(.terminal-host .xterm) {

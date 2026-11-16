@@ -1,21 +1,25 @@
 <script lang="ts">
-	import InteractiveTerminal from '#lib/components/InteractiveTerminal.svelte';
-	import { cssTerminalProfile } from '#lib/terminal-profiles.ts';
+	import SectionToc from '#lib/components/SectionToc.svelte';
+	import type { Path } from '$app/types';
 
-	const now = new Date().toISOString().slice(0, 10);
+	const items = [
+		{ path: 'css/bfc', label: 'Block Formatting Context' },
+		{ path: 'css/contain', label: 'Contain' },
+		{ path: 'css/flex', label: 'Flex' },
+		{ path: 'css/position', label: 'Position' }
+	] as const satisfies { path: Path; label: string }[];
 </script>
 
 <svelte:head>
-	<title>CSS</title>
-	<meta name="description" content="About CSS" />
+	<title>CSS 布局 | Runrioter Blog</title>
+	<meta
+		name="description"
+		content="CSS 布局教程：BFC、contain、flexbox 与定位，可预测的布局行为。"
+	/>
 </svelte:head>
 
-<InteractiveTerminal
-	historyKey={cssTerminalProfile.historyKey}
-	introLines={cssTerminalProfile.introLines(now)}
-	hint={cssTerminalProfile.hint}
-	dirs={cssTerminalProfile.dirs}
-	files={cssTerminalProfile.files}
-	internalRoutes={cssTerminalProfile.internalRoutes}
-	helpExamples={cssTerminalProfile.helpExamples}
+<SectionToc
+	title="CSS 布局"
+	description="布局隔离与定位：BFC、contain、flexbox 和 stacking——让 CSS 行为可预测。"
+	{items}
 />
