@@ -6,6 +6,15 @@ test('two-pane agent shell renders', async ({ page }) => {
 	await expect(page.locator('.agent-terminal')).toBeVisible();
 	await expect(page.locator('.agent-docs')).toBeVisible();
 	await expect(page.locator('.agent-docs h1')).toHaveText('Runrioter Blog');
+	// The terminal grid must be fitted to the pane — otherwise an empty black
+	// band sits below the prompt (regression: missing fit/resize handling).
+	await page.waitForSelector('.terminal-host .xterm-rows > div');
+	const dims = await page.evaluate(() => {
+		const host = document.querySelector('.terminal-host');
+		const screen = host?.querySelector('.xterm-screen');
+		return { host: host?.clientHeight ?? 0, screen: screen?.getBoundingClientRect().height ?? 0 };
+	});
+	expect(dims.screen).toBeGreaterThanOrEqual(dims.host - 24);
 });
 
 test('clicking a TOC link navigates the document pane and echoes in the terminal', async ({

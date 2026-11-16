@@ -37,6 +37,7 @@
 
 	let host: HTMLDivElement;
 	let term: Terminal | null = null;
+	let resizeObserver: ResizeObserver | null = null;
 	let commandBuffer = '';
 	let cursorPos = 0;
 	let currentDir = '/';
@@ -70,6 +71,26 @@
 
 	function writeLine(text = '') {
 		term?.writeln(text);
+	}
+
+	/**
+	 * Fit the grid to the pane. The @xterm/xterm core bundle no longer ships
+	 * FitAddon, so we derive rows/cols from the measured character cell and
+	 * resize the grid to fill the container — otherwise the terminal keeps its
+	 * initial size and leaves an empty black band below the prompt.
+	 */
+	function fit() {
+		if (!term) return;
+		const { clientWidth, clientHeight } = host;
+		if (clientWidth === 0 || clientHeight === 0) return;
+		const row = host.querySelector('.xterm-rows > div') as HTMLElement | null;
+		const char = row?.querySelector('span');
+		const cellW = char ? char.getBoundingClientRect().width : 8;
+		const cellH = row ? row.getBoundingClientRect().height : 17;
+		if (cellW <= 0 || cellH <= 0) return;
+		const cols = Math.max(2, Math.floor(clientWidth / cellW));
+		const rows = Math.max(1, Math.floor(clientHeight / cellH));
+		if (cols !== term.cols || rows !== term.rows) term.resize(cols, rows);
 	}
 
 	/**
@@ -440,12 +461,23 @@
 
 			term.open(host);
 			term.focus();
+			fit();
 			registerApi({ echoCommand });
 			for (const line of introLines) {
 				writeLine(line);
 			}
-			if (introLines.length > 0) writeLine('');
+			if (hint) {
+				writeLine(`\x1b[2m${hint}\x1b[0m`);
+			}
+			if (introLines.length > 0 || hint) writeLine('');
 			term.write(prompt());
+
+			resizeObserver = new ResizeObserver(() => fit());
+			resizeObserver.observe(host);
+
+			// The mono font loads asynchronously; the cell size can change after
+			// layout without changing the host box, which ResizeObserver misses.
+			document.fonts?.ready.then(() => fit());
 
 			disposable = term.onData(async (data) => {
 				if (!term) return;
@@ -565,6 +597,8 @@
 
 		return () => {
 			unmounted = true;
+			resizeObserver?.disconnect();
+			resizeObserver = null;
 			disposable?.dispose();
 			term?.dispose();
 			term = null;
@@ -574,20 +608,15 @@
 
 <div class="interactive-terminal">
 	<div bind:this={host} class="terminal-host"></div>
-	{#if hint}
-		<p class="hint">{hint}</p>
-	{/if}
 </div>
 
 <style>
 	.interactive-terminal {
-		--muted: #6e7681;
 		flex: 1;
 		height: 100%;
 		min-height: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.6rem;
 		padding: 0.5rem;
 	}
 
@@ -595,13 +624,6 @@
 		flex: 1;
 		min-height: 0;
 		overflow: hidden;
-	}
-
-	.hint {
-		margin: 0 0.25rem;
-		color: var(--muted);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
 	}
 
 	:global(.terminal-host .xterm) {
