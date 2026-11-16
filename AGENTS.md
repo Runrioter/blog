@@ -157,3 +157,34 @@ Before finishing UI/layout work, verify all of the following still hold:
 - `.agent-terminal` keeps `overflow: hidden` (xterm overflow intercepts clicks on the doc pane — covered by the e2e TOC-click test).
 - Internal navigation still passes lint rules and works with the GitHub Pages base path.
 - Run `npm run lint`, `npm run check`, and `npm run test:e2e` for layout/navigation changes.
+
+## Repo Agent Skills
+
+Reusable workflows live in `.agents/skills/` (pi discovers them automatically; force with `/skill:<name>`):
+
+- `release` — pre-flight gates (incl. the `BASE_PATH` deploy-shape build and a workflow/dependency engine check), `git release --semver …`, Actions monitoring and failure triage.
+- `visual-check` — build → preview → Playwright probe (`.agents/skills/visual-check/scripts/shot.mjs`) → screenshot → cleanup loop, plus the known visual failure classes to assert.
+- `content-update` — Obsidian vault edit → `npm run content:sync` → diff review → scaled validation → commit.
+
+## SvelteKit 3 / Svelte 5 Gotchas (learned the hard way)
+
+- `resolve()` is strictly generic in kit 3.2: runtime-built path strings need `as ReturnType<AppTypes['Path']>` — the generated `AppTypes.Path` is a _callable_, so use `ReturnType<…>` (not the alias directly) for the string union.
+- `$app/paths` `base` is not in the public types, and at runtime it is a **relative URL during prerendering** (`./`, `../`). The stable base in every context is the `__SVELTEKIT_PATHS_BASE__` compile constant (declared in `src/app.d.ts`). Remember the payload `base` is also relative, while `page.url.pathname` **keeps** the base prefix — strip it with `__SVELTEKIT_PATHS_BASE__` when comparing paths.
+- Kit 3 ignores `svelte.config.js` — svelte/adapter/mdsvex config lives in the `sveltekit(...)` plugin in `vite.config.ts`. `#lib` is wired through the `imports` field in `package.json` (explicit file extensions required).
+- Svelte 5 compiler/lint rules that bite: `:global()` accepts exactly one selector (use `:is(...)` for alternatives); `transition:` on a _component_ is an error (wrap the element or drop the transition); `$derived` rejects block-function form (use a helper + expression); use `onxxx={}` event attributes (`on:xxx` is deprecated); a non-interactive `role` on `<button>` is a lint violation (use `<div role=…>` for non-interactive widgets).
+- JSDoc `@type` casts don't work in `.ts` files (module syntax); use explicit `satisfies`/`as`.
+
+## xterm Invariants (`InteractiveTerminal.svelte`)
+
+- Cell size is measured from a text span's width **divided by its character-run length** (xterm packs a whole same-style run into one span — a span is a run, not a cell), with `.xterm-char-measure-element` as the fallback source.
+- Input is rendered with append + erase/DCH primitives (shell-`read` style). Never rewrite the whole input line per keystroke — on wrapped lines it corrupts the buffer and balloons history. Input is capped at one display row.
+- The cursor cell renders as a _space_ in DOM `textContent` — don't treat it as phantom content.
+- The grid must re-fit on host resize: `ResizeObserver` plus a settle loop after `document.fonts.ready` (async fonts change cell size without changing the host box). Keep the terminal host `overflow: hidden`.
+
+## E2E Locator Patterns
+
+- `getByRole('link', { name })` matches _substring_ names and can match several nodes — disambiguate with `.first()` or `filter({ hasText })`.
+- A keyed `fade` (140ms) leaves the outgoing route in the DOM after navigation — filter, don't assume single-match.
+- Wait for the terminal content (`.terminal-host .xterm-rows > div`) before any terminal interaction; type speed ~10ms.
+- Hover/focus affordances: assert with `toHaveCSS` / computed style, not screenshots.
+- Test timeout is 20s (`playwright.config.ts`).
