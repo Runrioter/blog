@@ -40,6 +40,26 @@ test('terminal open command navigates', async ({ page }) => {
 	await expect(page.locator('.agent-docs h1').filter({ hasText: 'About' })).toHaveText('About');
 });
 
+test('breadcrumb path navigates and highlights on hover', async ({ page }) => {
+	await page.goto('/');
+	await page.getByRole('link', { name: '基础概念' }).first().click();
+	await expect(page).toHaveURL(/\/ai\/basics$/);
+	// The path indicator is now the breadcrumb: ~ / ai / basics
+	const crumbs = page.locator('.breadcrumb .crumb');
+	await expect(crumbs).toHaveText(['~', 'ai', 'basics']);
+	// Ancestor segment: clicking "ai" jumps to the AI section
+	await crumbs.filter({ hasText: 'ai' }).click();
+	await expect(page).toHaveURL(/\/ai$/);
+	// Root segment: clicking ~ jumps home
+	await page.locator('.breadcrumb .crumb').filter({ hasText: '~' }).click();
+	await expect(page).toHaveURL(/\/$/);
+	// Hovering a crumb highlights it green (clickable affordance)
+	await page.getByRole('link', { name: '基础概念' }).first().click();
+	const aiCrumb = page.locator('.breadcrumb .crumb').filter({ hasText: 'ai' });
+	await aiCrumb.hover();
+	await expect(aiCrumb).toHaveCSS('color', 'rgb(63, 185, 80)');
+});
+
 test('long terminal lines wrap inside the pane instead of clipping', async ({ page }) => {
 	await page.goto('/');
 	await page.waitForSelector('.terminal-host .xterm-rows > div');

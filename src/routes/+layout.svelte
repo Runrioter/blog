@@ -2,12 +2,12 @@
 	import '../app.css';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Header from './Header.svelte';
+	import Breadcrumb from './Breadcrumb.svelte';
 	import InteractiveTerminal from '#lib/components/InteractiveTerminal.svelte';
 	import { shellTerminalProfile } from '#lib/terminal-profiles.ts';
 	import svelte from '#lib/images/svelte-logo.svg';
 	import SvelteKitDashboard from '#lib/components/SvelteKitDashboard.svelte';
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/env';
 
@@ -56,13 +56,13 @@
 		}
 	}
 
-	// kit 3: resolve('') is the base-prefixed root URL ("/" in dev, "/blog/" on Pages).
-	const rootUrl = resolve('');
 
+		// The vite-injected base constant is stable in every context; the $app/paths
+	// `resolve('')` it used to rely on is a relative URL during prerendering.
 	function routePath(pathname: string): string {
-		if (pathname === rootUrl || pathname === rootUrl.replace(/\/$/, '')) return '';
-		if (pathname.startsWith(rootUrl)) return pathname.slice(rootUrl.length);
-		return pathname.replace(/^\//, '');
+		const b = __SVELTEKIT_PATHS_BASE__ ?? '';
+		const rel = pathname.startsWith(b) ? pathname.slice(b.length) : pathname;
+		return rel.replace(/^\//, '');
 	}
 
 	$effect(() => {
@@ -78,17 +78,13 @@
 		if (current === prevPath) return;
 		prevPath = current;
 		if (navSource !== null) {
+			// Terminal or breadcrumb navigation — the terminal already showed it.
 			navSource = null;
 			return;
 		}
 		const target = routePath(current);
 		api?.echoCommand(`open ${target === '' ? 'home' : target}`);
 	});
-
-	const pathnameLabel = (pathname: string) => {
-		const rel = routePath(pathname);
-		return rel === '' ? '~' : `~/${rel}`;
-	};
 </script>
 
 <div class="app">
@@ -101,12 +97,8 @@
 				<span class="dot yellow"></span>
 				<span class="dot green"></span>
 			</div>
-			<p class="terminal-title">runrioter@blog: ~</p>
-			{#key page.url.pathname}
-				<p class="path-indicator" transition:fade={{ duration: 140 }}>
-					{pathnameLabel(page.url.pathname)}
-				</p>
-			{/key}
+			<p class="terminal-title">runrioter@blog:</p>
+			<Breadcrumb onNavigate={() => (navSource = 'terminal')} />
 			<span class="agent-badge" aria-hidden="true">agent</span>
 		</div>
 
@@ -215,18 +207,6 @@
 		color: #8b949e;
 		white-space: nowrap;
 		letter-spacing: 0.02em;
-	}
-
-	.path-indicator {
-		margin: 0;
-		padding: 0.1rem 0.35rem;
-		border: 1px solid #30363d;
-		background: #161b22;
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		line-height: 1.2;
-		color: #7d8590;
-		white-space: nowrap;
 	}
 
 	.agent-badge {
@@ -338,10 +318,6 @@
 		}
 
 		.terminal-title {
-			display: none;
-		}
-
-		.path-indicator {
 			display: none;
 		}
 

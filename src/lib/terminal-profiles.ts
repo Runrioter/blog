@@ -1,8 +1,11 @@
+import type { AppTypes } from '$app/types';
+
 export type TerminalProfile = {
 	historyKey: string;
 	dirs: Record<string, string[]>;
 	files: Record<string, string>;
-	internalRoutes: Record<string, import('$app/types').Path>;
+	// kit 3: AppTypes['Path'] is callable; ReturnType<...> is the path union.
+	internalRoutes: Record<string, ReturnType<AppTypes['Path']>>;
 	helpExamples: string[];
 	hint: string;
 	introLines: (date: string) => string[];
