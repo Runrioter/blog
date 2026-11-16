@@ -53,7 +53,6 @@
 	});
 
 	const pathnameLabel = (pathname: string) => {
-		const root = rootUrl.replace(/\/$/, '');
 		const rel = routePath(pathname);
 		return rel === '' ? '~' : `~/${rel}`;
 	};

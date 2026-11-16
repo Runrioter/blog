@@ -22,7 +22,7 @@ Purpose: this file is a compact, high-signal summary for coding agents before ma
 
 - Tutorials are grouped under src/routes/(tutorials).
 - AI/AWS article prose is generated from the Obsidian vault (see docs/content-workflow.md); section landings are TOC docs via `#lib/components/SectionToc.svelte` (AI/AWS from generated `toc.ts`, CSS handwritten).
-- Articles reuse shared prose styling in src/lib/components/DocProse.svelte.
+- Articles reuse shared prose styling in src/lib/components/DocProse.svelte; section route layouts (ai/css/aws) wrap articles in DocProse but pass the landing TOC through unwrapped.
 - Preserve the terminal-themed visual direction (dark window, mono-forward accents) unless explicitly asked to redesign.
 
 ## 4) Terminal Profile Contract

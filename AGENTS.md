@@ -111,8 +111,7 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 - Tutorials are grouped under `src/routes/(tutorials)` (route group — no URL segment).
 - Prose content for `ai`/`aws` is **generated** from the Obsidian vault in `content/` (git-ignored) via `npm run content:sync` — edit the source notes there, never the generated `+page.svx`/`toc.ts`. See `docs/content-workflow.md`.
 - Section landing pages (`/ai`, `/css`, `/aws`) are table-of-contents documents built with `#lib/components/SectionToc.svelte`; the AI/AWS lists come from the generated `toc.ts`, the CSS list is handwritten (CSS tutorials are interactive, not vault-generated).
-- Article pages reuse `#lib/components/DocProse.svelte` for prose styling; do not duplicate typography wrappers.
-- There are no per-section route layouts; both panes come from the global layout.
+- Article pages reuse `#lib/components/DocProse.svelte` for prose styling; reuse instead of duplicating typography wrappers. Section route layouts (`ai`/`css`/`aws`) wrap articles in `DocProse` but pass the section landing (TOC) through unwrapped — keep that split.
 
 ## Styling Guidelines
 
