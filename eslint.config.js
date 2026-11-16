@@ -18,7 +18,10 @@ export default ts.config(
 		languageOptions: {
 			globals: {
 				...globals.browser,
-				...globals.node
+				...globals.node,
+				// vite-injected compile-time constant (see src/app.d.ts) —
+				// invisible to the TS parser's scope analysis, so declare it.
+				__SVELTEKIT_PATHS_BASE__: 'readonly'
 			}
 		}
 	},

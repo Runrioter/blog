@@ -142,7 +142,8 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 - Start by reading the relevant source and config files that are not ignored by `.gitignore`.
 - Use `rg` or `rg --files` for searches so ignored files stay out of scope by default.
 - Check `git status --short` before editing and do not revert unrelated user changes.
-- Prefer `apply_patch` for manual edits.
+- **Pre-commit gate (mandatory):** `npm run lint` AND `npm run check` must both pass before any commit; add `npm run test:e2e` for UI/terminal/routing changes. If Prettier flags files, run `npm run format` first, then re-check. Never commit over a red gate — a lint-red `Breadcrumb.svelte` already slipped into history once (the new `svelte/no-navigation-without-resolve` requires a literal `resolve()` in every `href`/`goto`, and `no-undef` ignores `app.d.ts` globals in `.svelte` files).
+- Prefer targeted edits over whole-file rewrites.
 - Keep generated artifacts out of commits unless the user explicitly asks for them.
 - After edits, report the files changed and the validation commands run. If a command was not run, state why.
 

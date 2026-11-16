@@ -24,29 +24,29 @@
 
 	const segments = $derived(routeSegments(page.url.pathname));
 
-	// Every ancestor of a live route is itself a route ("ai" for /ai/basics),
-	// so a segment-built path is always a real route; kit 3's strict generic
-	// resolve() doesn't accept a runtime-joined string without a cast.
-	function resolvePath(...parts: string[]): string {
-		return resolve(parts.filter(Boolean).join('/') as ReturnType<AppTypes['Path']>);
+	// kit 3's strict generic resolve() doesn't accept a runtime-joined string;
+	// the cast is the helper — `resolve` stays at every call site (the lint
+	// rule requires the imported resolve, not a wrapper, in href/goto).
+	function asRoute(...parts: string[]): ReturnType<AppTypes['Path']> {
+		return parts.filter(Boolean).join('/') as ReturnType<AppTypes['Path']>;
 	}
 
+	// Terminal-side navigation: the doc-pane echo must not fire again.
+	// Resolves exactly once here — the rule requires a literal resolve() in
+	// every goto, so callers pass unresolved path segments, never hrefs.
 	function navigate(...parts: string[]) {
-		// Terminal-side navigation: the doc-pane echo must not fire again.
 		onNavigate();
-		void goto(resolvePath(...parts));
+		void goto(resolve(asRoute(...parts)));
 	}
 </script>
 
 <nav class="breadcrumb" aria-label="You are here">
-	<a class="crumb" href={resolvePath()}>
-		~
-	</a>
+	<a class="crumb" href={resolve('')} onclick={() => navigate()}> ~ </a>
 	{#each segments as segment, i (segment + i)}
 		<span class="sep" aria-hidden="true">/</span>
 		<a
 			class="crumb"
-			href={resolvePath(...segments.slice(0, i + 1))}
+			href={resolve(asRoute(...segments.slice(0, i + 1)))}
 			onclick={() => navigate(...segments.slice(0, i + 1))}
 		>
 			{segment}
