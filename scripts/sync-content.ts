@@ -48,6 +48,7 @@ type Note = {
 	title: string;
 	description: string;
 	order: number;
+	tags: string[]; // frontmatter `tags` (rendered as pills on the page)
 	body: string;
 };
 
@@ -180,6 +181,7 @@ function collectNotes(): Note[] {
 				const title =
 					typeof meta.title === 'string' ? meta.title : path.posix.basename(entryRel, '.md');
 				const order = typeof meta.order === 'number' ? meta.order : 1000;
+				const tags = Array.isArray(meta.tags) ? meta.tags.map(String) : [];
 				notes.push({
 					rel: entryRel,
 					dir: path.posix.dirname(entryRel),
@@ -187,6 +189,7 @@ function collectNotes(): Note[] {
 					title,
 					description: typeof meta.description === 'string' ? meta.description : '',
 					order,
+					tags,
 					body: body.replace(/^\s+/, '')
 				});
 			}
@@ -342,14 +345,40 @@ function escapeHtml(value: string): string {
 		.replace(/"/g, '&quot;');
 }
 
+function jsString(value: string): string {
+	// Single-quoted JS string literal, safe inside a <script> block: escapes
+	// backslash, quote, control chars and `<` (a literal `</script>` sequence
+	// would terminate the script tag).
+	return (
+		"'" +
+		value
+			.replace(/\\/g, '\\\\')
+			.replace(/'/g, "\\'")
+			.replace(/\n/g, '\\n')
+			.replace(/\r/g, '\\r')
+			.replace(/\t/g, '\\t')
+			.replace(/</g, '\\u003c') +
+		"'"
+	);
+}
+
 function generatePage(note: Note, markdown: string): string {
-	const lines: string[] = [MARKER, '<script lang="ts">', '</script>', ''];
+	const scriptLines = ['<script lang="ts">'];
+	if (note.tags.length > 0) {
+		scriptLines.push("\timport ArticleTags from '#lib/components/ArticleTags.svelte';");
+	}
+	scriptLines.push('</script>', '');
+	const lines: string[] = [MARKER, ...scriptLines];
 	if (note.title || note.description) {
 		lines.push('<svelte:head>');
 		if (note.title) lines.push(`\t<title>${escapeHtml(note.title)}</title>`);
 		if (note.description)
 			lines.push(`\t<meta name="description" content="${escapeHtml(note.description)}" />`);
 		lines.push('</svelte:head>', '');
+	}
+	if (note.tags.length > 0) {
+		const list = note.tags.map((tag) => jsString(tag)).join(', ');
+		lines.push(`<ArticleTags tags={[${list}]} />`, '');
 	}
 	lines.push(markdown.endsWith('\n') || markdown === '' ? markdown : markdown + '\n');
 	return lines.join('\n');

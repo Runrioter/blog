@@ -31,6 +31,7 @@ Blog prose follows the same rule: `ai/<slug>.md`, `aws/<slug>.md` (the note base
 |               |              |                                              | _Applies to prose notes too — the sync ignores these extra keys_                                                                               |
 | `description` | optional     | single-line string                           | Prose notes: meta description (synced to the page)                                                                                             |
 | `order`       | optional     | integer                                      | Prose notes: TOC sort order (default 1000)                                                                                                     |
+| `tags`        | optional     | array (inline `[a, b]` or block `- a`)       | Prose notes: rendered as pill badges on the article page (display-only). Journal notes: metadata for Obsidian search, never rendered              |
 
 Template for a new journal/agent note:
 
@@ -70,6 +71,6 @@ updated: YYYY-MM-DD
 
 ## After writing
 
-- Publishing a note (no `publish: false`) → run `npm run content:sync` and commit the regenerated `.svx`/`toc.ts` (see the `content-update` skill).
+- Publishing a note (no `publish: false`) → run `npm run content:sync` and commit the regenerated `.svx`/`toc.ts` (see the `content-update` skill). Prose `tags` render as pill badges at the top of the generated page.
 - A journal note → nothing to build; it never reaches the site.
 - Never hand-edit generated `.svx`/`toc.ts` — edit the vault note and re-sync.

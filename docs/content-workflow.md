@@ -32,10 +32,13 @@ content/
 
 - Folder = route section, note basename = route segment. Vault root level notes map to
   `/<name>/`.
-- Frontmatter (simple `key: value` YAML only):
+- Frontmatter (simple `key: value` YAML; arrays supported):
   - `title` — page `<title>`, TOC label, wikilink label (defaults to the filename)
   - `description` — meta description
   - `order` — TOC sort order (default 1000; use 1, 2, 3… for editorial ordering)
+  - `tags` — array (`tags: [a, b]` or block form). Rendered as pill badges at the top
+    of the article page (via `#lib/components/ArticleTags.svelte`); display-only,
+    no links. Optional on prose notes — omit it for no badges.
 - `[[wikilinks]]` resolve by note **basename** (same as Obsidian) and become relative links, so
   they work under the GitHub Pages subpath without `base` handling.
 - `![[image.png]]` (or `![](relative/path)`) is copied to `static/uploads/<section>/` and
