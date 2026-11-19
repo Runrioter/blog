@@ -80,25 +80,81 @@ function loadSvelteConfig(): Promise<SvelteConfig> {
 	);
 }
 
+type Scalar = string | number | boolean;
+type FrontmatterValue = Scalar | Scalar[];
+
+function parseScalar(raw: string): Scalar {
+	const value = raw.trim();
+	if (/^".*"$/.test(value) || /^'.*'$/.test(value)) return value.slice(1, -1);
+	else if (/^-?\d+$/.test(value)) return Number(value);
+	else if (value === 'true' || value === 'false') return value === 'true';
+	return value;
+}
+
+/** Split a comma-separated list, respecting single/double quotes (e.g. `a, "b, c"`, `'x'`). */
+function splitList(raw: string): string[] {
+	const parts: string[] = [];
+	let current = '';
+	let quote: string | null = null;
+	for (const ch of raw) {
+		if (quote) {
+			if (ch === quote) quote = null;
+			else current += ch;
+		} else if (ch === '"' || ch === "'") {
+			quote = ch;
+		} else if (ch === ',') {
+			parts.push(current.trim());
+			current = '';
+		} else {
+			current += ch;
+		}
+	}
+	const last = current.trim();
+	if (last) parts.push(last);
+	return parts.filter((p) => p !== '');
+}
+
 function parseFrontmatter(
 	raw: string,
 	file: string
-): { meta: Record<string, string | number | boolean>; body: string } {
+): { meta: Record<string, FrontmatterValue>; body: string } {
 	const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(raw);
 	if (!match) return { meta: {}, body: raw };
-	const meta: Record<string, string | number | boolean> = {};
-	for (const line of match[1].split(/\r?\n/)) {
+	const meta: Record<string, FrontmatterValue> = {};
+	const lines = match[1].split(/\r?\n/);
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
 		if (!line.trim() || line.trimStart().startsWith('#')) continue;
+
+		// Block array: `key:` followed by indented `- item` lines.
+		const block = /^([A-Za-z_][\w-]*):\s*$/.exec(line);
+		if (block) {
+			const items: Scalar[] = [];
+			let j = i + 1;
+			while (j < lines.length && /^\s+-\s+/.test(lines[j])) {
+				items.push(parseScalar(lines[j].replace(/^\s+-\s+/, '')));
+				j++;
+			}
+			if (items.length > 0) {
+				meta[block[1]] = items;
+				i = j - 1;
+				continue;
+			}
+		}
+
 		const kv = /^([A-Za-z_][\w-]*):\s*(.*)$/.exec(line);
 		if (!kv) {
 			warnings.push({ file, message: `ignoring unsupported frontmatter line: ${line.trim()}` });
 			continue;
 		}
-		let value: string | number | boolean = kv[2].trim();
-		if (/^".*"$/.test(value) || /^'.*'$/.test(value)) value = value.slice(1, -1);
-		else if (/^-?\d+$/.test(value)) value = Number(value);
-		else if (value === 'true' || value === 'false') value = value === 'true';
-		meta[kv[1]] = value;
+		const rawValue = kv[2].trim();
+		if (rawValue.startsWith('[') && rawValue.endsWith(']')) {
+			// Inline array: `[a, "b c", 1, true]`; non-closed brackets stay a string.
+			if (rawValue === '[]') meta[kv[1]] = [];
+			else meta[kv[1]] = splitList(rawValue.slice(1, -1)).map(parseScalar);
+		} else {
+			meta[kv[1]] = parseScalar(rawValue);
+		}
 	}
 	return { meta, body: raw.slice(match[0].length) };
 }

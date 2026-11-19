@@ -51,7 +51,7 @@ updated: YYYY-MM-DD
 
 - `created` is set to the current date at creation and never changes afterwards.
 - Every time the note is edited (content changed), set `updated` to the current date **in the same edit**.
-- Keep frontmatter to simple `key: value` scalars — array/inline YAML (e.g. `tags: [a, b]`) trips the sync script's parser warning.
+- Arrays **are** supported in frontmatter — both inline (`tags: [ai, "deep learning"]`) and block (`tags:\n  - ai\n  - aws`) forms; elements may be quoted strings, numbers, or booleans. Use them for `tags` on journal notes. Keep everything else to simple `key: value` scalars.
 
 ## Where to write
 
