@@ -33,20 +33,20 @@
 		font-size: 1.5rem;
 		font-weight: 600;
 		margin: 0 0 0.8rem;
-		color: #c9d1d9;
+		color: var(--fg);
 	}
 
 	h2 {
 		font-family: var(--font-mono);
 		font-size: 1rem;
 		margin: 1.4rem 0 0.5rem;
-		color: #8b949e;
+		color: var(--fg-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 	}
 
 	p {
-		color: #8b949e;
+		color: var(--fg-muted);
 		font-size: 0.92rem;
 		line-height: 1.7;
 	}
@@ -62,30 +62,30 @@
 	}
 
 	.kv li {
-		color: #c9d1d9;
+		color: var(--fg);
 		font-size: 0.92rem;
 	}
 
 	.kv span {
 		display: inline-block;
 		min-width: 8rem;
-		color: #6e7681;
+		color: var(--fg-faint);
 		font-family: var(--font-mono);
 		font-size: 0.85rem;
 	}
 
 	.bullets li {
-		color: #8b949e;
+		color: var(--fg-muted);
 		font-size: 0.92rem;
 	}
 
 	.bullets li::before {
 		content: '▸ ';
-		color: #3fb950;
+		color: var(--green);
 	}
 
 	a {
-		color: #58a6ff;
+		color: var(--link);
 		text-decoration: none;
 	}
 

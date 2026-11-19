@@ -153,14 +153,11 @@
 
 	.terminal-shell {
 		margin: 0 0.5rem;
-		border: 1px solid #30363d;
-		background: #161b22;
+		border: 1px solid var(--border);
+		background: var(--bg-panel);
 		border-radius: 14px;
 		overflow: hidden;
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.06),
-			0 12px 30px rgba(0, 0, 0, 0.35),
-			0 2px 8px rgba(0, 0, 0, 0.25);
+		box-shadow: var(--inset), var(--shadow);
 		display: flex;
 		flex-direction: column;
 		flex: 1;
@@ -172,8 +169,8 @@
 		align-items: center;
 		gap: 0.6rem;
 		padding: 0.36rem 0.58rem;
-		border-bottom: 1px solid #30363d;
-		background: #1f242c;
+		border-bottom: 1px solid var(--border);
+		background: var(--bg-header);
 	}
 
 	.lights {
@@ -203,7 +200,7 @@
 		margin: 0;
 		font-family: var(--font-mono);
 		font-size: 0.74rem;
-		color: #8b949e;
+		color: var(--color-muted);
 		white-space: nowrap;
 		letter-spacing: 0.02em;
 	}
@@ -211,10 +208,10 @@
 	.agent-badge {
 		margin-left: auto;
 		padding: 0.1rem 0.42rem;
-		border: 1px solid #238636;
+		border: 1px solid color-mix(in oklab, var(--green) 60%, transparent);
 		border-radius: 999px;
-		background: rgba(63, 185, 80, 0.12);
-		color: #3fb950;
+		background: var(--green-soft);
+		color: var(--green);
 		font-family: var(--font-mono);
 		font-size: 0.66rem;
 		letter-spacing: 0.08em;
@@ -225,7 +222,7 @@
 		display: flex;
 		flex: 1;
 		min-height: 0;
-		background: #0d1117;
+		background: var(--bg-deep);
 	}
 
 	.agent-body.dragging {
@@ -242,7 +239,7 @@
 		min-width: 220px;
 		min-height: 0;
 		overflow: hidden;
-		border-right: 1px solid #30363d;
+		border-right: 1px solid var(--border);
 		display: flex;
 	}
 
@@ -268,13 +265,13 @@
 		width: 3px;
 		height: 2.25rem;
 		border-radius: 2px;
-		background: #3d444d;
+		background: var(--border-soft);
 	}
 
 	.pane-divider:hover .divider-grip,
 	.pane-divider:focus-visible .divider-grip,
 	.agent-body.dragging .pane-divider .divider-grip {
-		background: #3fb950;
+		background: var(--green);
 		height: 3.5rem;
 	}
 
@@ -289,8 +286,8 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		scrollbar-width: thin;
-		scrollbar-color: #3d444d #0d1117;
-		background: #0d1117;
+		scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+		background: var(--bg-deep);
 	}
 
 	.agent-docs :global(:is(p, li, h1, h2, h3, h4, td, th)) {
@@ -335,7 +332,7 @@
 			min-height: 200px;
 			overflow: hidden;
 			border-right: none;
-			border-bottom: 1px solid #30363d;
+			border-bottom: 1px solid var(--border);
 		}
 
 		.pane-divider {

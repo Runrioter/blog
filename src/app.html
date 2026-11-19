@@ -4,6 +4,20 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			// Apply the persisted scheme before first paint (no FOUC): the CSS
+			// defaults to light and `.dark` overrides it. Kept in sync at runtime
+			// by src/lib/theme.svelte.ts.
+			(function () {
+				try {
+					var t = localStorage.getItem('theme') || 'auto';
+					var dark =
+						t === 'dark' ||
+						(t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+					document.documentElement.classList.toggle('dark', dark);
+				} catch (e) {}
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

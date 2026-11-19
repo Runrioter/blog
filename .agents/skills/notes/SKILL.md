@@ -31,7 +31,7 @@ Blog prose follows the same rule: `ai/<slug>.md`, `aws/<slug>.md` (the note base
 |               |              |                                              | _Applies to prose notes too — the sync ignores these extra keys_                                                                               |
 | `description` | optional     | single-line string                           | Prose notes: meta description (synced to the page)                                                                                             |
 | `order`       | optional     | integer                                      | Prose notes: TOC sort order (default 1000)                                                                                                     |
-| `tags`        | optional     | array (inline `[a, b]` or block `- a`)       | Prose notes: rendered as pill badges on the article page (display-only). Journal notes: metadata for Obsidian search, never rendered              |
+| `tags`        | optional     | array (inline `[a, b]` or block `- a`)       | Prose notes: rendered as pill badges on the article page (display-only). Journal notes: metadata for Obsidian search, never rendered           |
 
 Template for a new journal/agent note:
 

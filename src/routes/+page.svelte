@@ -85,20 +85,20 @@
 		font-size: 1.7rem;
 		font-weight: 600;
 		margin: 0 0 0.8rem;
-		color: #c9d1d9;
+		color: var(--fg);
 	}
 
 	h2 {
 		font-family: var(--font-mono);
 		font-size: 1.1rem;
 		margin: 1.6rem 0 0.6rem;
-		color: #8b949e;
+		color: var(--fg-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 	}
 
 	.intro {
-		color: #8b949e;
+		color: var(--fg-muted);
 		font-size: 0.95rem;
 		line-height: 1.7;
 		max-width: 46rem;
@@ -108,15 +108,15 @@
 	.intro code {
 		font-family: var(--font-mono);
 		font-size: 0.85em;
-		color: #58a6ff;
-		background: rgba(88, 166, 255, 0.1);
+		color: var(--link);
+		background: var(--code-bg);
 		border-radius: 0.25rem;
 		padding: 0.08em 0.3em;
 	}
 
 	.section {
 		padding: 0.7rem 0 0.4rem;
-		border-top: 1px solid #21262d;
+		border-top: 1px solid var(--border-soft);
 	}
 
 	.section h3 {
@@ -126,18 +126,18 @@
 	}
 
 	.section h3 a {
-		color: #c9d1d9;
+		color: var(--fg);
 		text-decoration: none;
-		border-bottom: 1px dashed #30363d;
+		border-bottom: 1px dashed var(--border);
 	}
 
 	.section h3 a:hover {
-		color: #58a6ff;
+		color: var(--link);
 	}
 
 	.section-desc {
 		margin: 0 0 0.5rem;
-		color: #8b949e;
+		color: var(--fg-muted);
 		font-size: 0.88rem;
 	}
 
@@ -151,7 +151,7 @@
 	}
 
 	li a {
-		color: #58a6ff;
+		color: var(--link);
 		font-family: var(--font-mono);
 		font-size: 0.9rem;
 		text-decoration: none;
@@ -159,7 +159,7 @@
 
 	li a::before {
 		content: '▸ ';
-		color: #484f58;
+		color: var(--bullet);
 	}
 
 	li a:hover {

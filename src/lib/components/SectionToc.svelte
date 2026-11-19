@@ -31,11 +31,11 @@
 		font-size: 1.5rem;
 		font-weight: 600;
 		margin: 0 0 0.6rem;
-		color: #c9d1d9;
+		color: var(--fg);
 	}
 
 	.desc {
-		color: #8b949e;
+		color: var(--fg-muted);
 		font-size: 0.92rem;
 		line-height: 1.6;
 		max-width: 42rem;
@@ -52,7 +52,7 @@
 	}
 
 	li a {
-		color: #58a6ff;
+		color: var(--link);
 		font-family: var(--font-mono);
 		font-size: 0.95rem;
 		text-decoration: none;
@@ -60,7 +60,7 @@
 
 	li a::before {
 		content: '▸ ';
-		color: #484f58;
+		color: var(--bullet);
 	}
 
 	li a:hover {

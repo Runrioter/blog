@@ -33,5 +33,16 @@ export default ts.config(
 				parser: ts.parser
 			}
 		}
+	},
+	{
+		// Svelte 5 runes modules run through the svelte processor; give them the
+		// TS parser too (theme.svelte.ts uses $state/$derived/$effect).
+		files: ['**/*.svelte.js', '**/*.svelte.ts'],
+
+		languageOptions: {
+			parserOptions: {
+				parser: ts.parser
+			}
+		}
 	}
 );

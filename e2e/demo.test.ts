@@ -53,11 +53,17 @@ test('breadcrumb path navigates and highlights on hover', async ({ page }) => {
 	// Root segment: clicking ~ jumps home
 	await page.locator('.breadcrumb .crumb').filter({ hasText: '~' }).click();
 	await expect(page).toHaveURL(/\/$/);
-	// Hovering a crumb highlights it green (clickable affordance)
+	// Hovering a crumb highlights it green (clickable affordance) — the exact
+	// green comes from the theme token (dark #3fb950, light #1a7f37).
 	await page.getByRole('link', { name: '基础概念' }).first().click();
 	const aiCrumb = page.locator('.breadcrumb .crumb').filter({ hasText: 'ai' });
 	await aiCrumb.hover();
-	await expect(aiCrumb).toHaveCSS('color', 'rgb(63, 185, 80)');
+	const accent = await page.evaluate(() => {
+		const hex = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+		const n = parseInt(hex.slice(1), 16);
+		return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+	});
+	await expect(aiCrumb).toHaveCSS('color', accent);
 });
 
 test('long terminal lines wrap inside the pane instead of clipping', async ({ page }) => {
@@ -119,4 +125,38 @@ test('dragging the divider resizes the terminal pane', async ({ page }) => {
 		return { host: host?.clientWidth ?? 0, screen: screen?.getBoundingClientRect().width ?? 0 };
 	});
 	expect(dims.screen).toBeLessThanOrEqual(dims.host + 2);
+});
+
+test('theme switcher toggles light/dark and persists', async ({ page }) => {
+	await page.goto('/');
+	await page.waitForSelector('.terminal-host .xterm-rows > div');
+	await page.waitForTimeout(1200);
+
+	// default: auto (= light in the headless runner) — no .dark class
+	await expect
+		.poll(async () => page.evaluate(() => document.documentElement.className))
+		.not.toContain('dark');
+
+	const fg = () =>
+		page.evaluate(() => {
+			const s = document.querySelector('.xterm-rows span');
+			return s ? getComputedStyle(s).color : '';
+		});
+
+	// switch to dark: html gets .dark, localStorage persists, terminal repaints
+	await page.getByRole('button', { name: 'Dark theme' }).click();
+	await expect(page.locator('html')).toHaveClass(/dark/);
+	await expect.poll(async () => page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
+	await expect.poll(fg).toBe('rgb(201, 209, 217)'); // #c9d1d9 dark foreground
+
+	// back to light: class removed, terminal repaints again
+	await page.getByRole('button', { name: 'Light theme' }).click();
+	await expect(page.locator('html')).not.toHaveClass(/dark/);
+	await expect.poll(fg).toBe('rgb(31, 35, 40)'); // #1f2328 light foreground
+
+	// survives a reload (app.html inline script, no FOUC)
+	await page.reload({ waitUntil: 'networkidle' });
+	await page.waitForSelector('.terminal-host .xterm-rows > div');
+	await expect(page.locator('html')).not.toHaveClass(/dark/);
+	await expect.poll(async () => page.evaluate(() => localStorage.getItem('theme'))).toBe('light');
 });

@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import '@xterm/xterm/css/xterm.css';
 	import type { Terminal } from '@xterm/xterm';
+	import { resolvedTheme, xtermPalettes, THEME_CHANGE_EVENT } from '#lib/theme.svelte.ts';
 
 	type FSMap = Record<string, string[]>;
 	type FileMap = Record<string, string>;
@@ -37,6 +38,15 @@
 
 	let host: HTMLDivElement;
 	let term: Terminal | null = null;
+
+	// Re-paint the xterm palette when the resolved scheme changes (light/dark
+	// switch or a system-scheme change while in auto mode). The theme module
+	// broadcasts an event so this works without cross-module runes reactivity.
+	function applyPalette() {
+		if (!term) return;
+		term.options.theme = xtermPalettes[resolvedTheme()];
+		term.refresh(0, term.rows - 1); // force a repaint with the new palette
+	}
 	let resizeObserver: ResizeObserver | null = null;
 	let commandBuffer = '';
 	let cursorPos = 0;
@@ -479,17 +489,7 @@
 				cursorBlink: true,
 				fontFamily: 'Fira Mono, Menlo, Monaco, monospace',
 				fontSize: 13,
-				theme: {
-					background: '#0d1117',
-					foreground: '#c9d1d9',
-					cursor: '#3fb950',
-					black: '#0d1117',
-					green: '#3fb950',
-					blue: '#58a6ff',
-					red: '#f85149',
-					yellow: '#d29922',
-					brightBlack: '#6e7681'
-				}
+				theme: xtermPalettes[resolvedTheme()]
 			});
 
 			term.open(host);
@@ -523,6 +523,8 @@
 				}
 			};
 			requestAnimationFrame(settle);
+
+			window.addEventListener(THEME_CHANGE_EVENT, applyPalette);
 
 			disposable = term.onData(async (data) => {
 				if (!term) return;
@@ -663,6 +665,7 @@
 
 		return () => {
 			unmounted = true;
+			window.removeEventListener(THEME_CHANGE_EVENT, applyPalette);
 			resizeObserver?.disconnect();
 			resizeObserver = null;
 			disposable?.dispose();

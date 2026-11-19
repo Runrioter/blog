@@ -2,35 +2,88 @@
 @plugin '@tailwindcss/typography';
 @import '@fontsource/fira-mono';
 
+/* Tailwind `dark:` follows the `.dark` class on <html> (set by theme.svelte.ts) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic theme tokens — one set per scheme. `:root` is light (the default),
+ * `.dark` overrides. Components reference the tokens instead of hard-coded
+ * hexes so the theme switch is a single CSS flip.
+ */
 :root {
 	--font-mono: 'Fira Mono', monospace;
-	--color-bg-0: rgb(202, 216, 228);
-	--color-bg-1: hsl(209, 36%, 86%);
-	--color-bg-2: hsl(224, 44%, 95%);
-	--color-theme-1: #ff3e00;
-	--color-theme-2: #4075a6;
-	--color-text: rgba(0, 0, 0, 0.7);
+
+	/* light (GitHub light palette) */
+	--bg-app: #ffffff;
+	--bg-panel: #f6f8fa;
+	--bg-header: #eef1f4;
+	--bg-deep: #ffffff;
+	--border: #d0d7de;
+	--border-soft: #d8dee4;
+	--fg: #1f2328;
+	--fg-muted: #57606a;
+	--fg-faint: #6e7781;
+	--link: #0969da;
+	--link-hover: #0550ae;
+	--green: #1a7f37;
+	--green-soft: rgba(26, 127, 55, 0.1);
+	--red: #cf222e;
+	--yellow: #9a6700;
+	--bullet: #6e7781;
+	--code-bg: rgba(9, 105, 218, 0.08);
+	--inset: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+	--shadow: 0 12px 30px rgba(140, 149, 159, 0.2), 0 2px 8px rgba(140, 149, 159, 0.14);
+	--scroll-thumb: #c1c9d1;
+	--scroll-track: #f6f8fa;
+
+	/* aliases used by components (Breadcrumb, ArticleTags) */
+	--color-accent: var(--green);
+	--color-muted: var(--fg-muted);
+
 	--column-width: 42rem;
 	--column-margin-top: 4rem;
-	color: var(--color-text);
+	color: var(--fg);
+}
+
+.dark {
+	/* dark (GitHub dark palette — the original terminal theme) */
+	--bg-app: #0d1117;
+	--bg-panel: #161b22;
+	--bg-header: #1f242c;
+	--bg-deep: #0d1117;
+	--border: #30363d;
+	--border-soft: #3d444d;
+	--fg: #c9d1d9;
+	--fg-muted: #8b949e;
+	--fg-faint: #6e7681;
+	--link: #58a6ff;
+	--link-hover: #79b8ff;
+	--green: #3fb950;
+	--green-soft: rgba(63, 185, 80, 0.12);
+	--red: #f85149;
+	--yellow: #d29922;
+	--bullet: #484f58;
+	--code-bg: rgba(88, 166, 255, 0.1);
+	--inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+	--shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.25);
+	--scroll-thumb: #3d444d;
+	--scroll-track: #0d1117;
+
+	--color-accent: var(--green);
+	--color-muted: var(--fg-muted);
+
+	color: var(--fg);
 }
 
 body {
 	min-height: 100vh;
 	margin: 0;
-	background-attachment: fixed;
-	background-color: white;
-	background-size: 100vw 100vh;
-	/* background-image: radial-gradient(
-			50% 50% at 50% 50%,
-			rgba(255, 255, 255, 0.75) 0%,
-			rgba(255, 255, 255, 0) 100%
-		),
-		linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-1) 15%, var(--color-bg-2) 50%); */
+	background-color: var(--bg-app);
+	color: var(--fg);
 }
 
 a {
-	color: var(--color-theme-1);
+	color: var(--link);
 	text-decoration: none;
 }
 
@@ -41,12 +94,12 @@ a:hover {
 pre {
 	font-size: 16px;
 	font-family: var(--font-mono);
-	background-color: rgba(255, 255, 255, 0.45);
+	background-color: var(--bg-panel);
 	border-radius: 3px;
 	box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
 	padding: 0.5em;
 	overflow-x: auto;
-	color: var(--color-text);
+	color: var(--fg);
 }
 input {
 	font-size: inherit;
