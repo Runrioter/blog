@@ -49,6 +49,7 @@ Use npm; this project has `package-lock.json`.
 - Full test suite: `npm run test`
 - Production build: `npm run build`
 - Preview production build: `npm run preview`
+- Release (pre-flight + version bump + tag + push): `make release [BUMP=patch|minor|major]` — see `Makefile` and the `release` skill
 
 Before finishing code changes, run the narrowest relevant validation. For shared route, layout, config, or deployment changes, prefer `npm run check` plus `npm run lint`; add tests or `npm run build` when the change affects rendering, routing, or static output.
 
