@@ -110,6 +110,7 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 
 - Tutorials are grouped under `src/routes/(tutorials)` (route group — no URL segment).
 - Prose content for `ai`/`aws` is **generated** from the Obsidian vault in `content/` (git-ignored) via `npm run content:sync` — edit the source notes there, never the generated `+page.svx`/`toc.ts`. See `docs/content-workflow.md`.
+- The vault is wired as the `obsidian` MCP server (project config `.pi/mcp.json`, vault id `blog`; `obsidian-mcp` reads/writes the markdown files directly — the Obsidian app need not run). Use `mcp__obsidian__*` tools to read/write/search vault notes. Notes with `publish: false` frontmatter stay in the vault but are **skipped** by `content:sync` (no route) — correct for journal/agent notes.
 - Section landing pages (`/ai`, `/css`, `/aws`) are table-of-contents documents built with `#lib/components/SectionToc.svelte`; the AI/AWS lists come from the generated `toc.ts`, the CSS list is handwritten (CSS tutorials are interactive, not vault-generated).
 - Article pages reuse `#lib/components/DocProse.svelte` for prose styling; reuse instead of duplicating typography wrappers. Section route layouts (`ai`/`css`/`aws`) wrap articles in `DocProse` but pass the section landing (TOC) through unwrapped — keep that split.
 
@@ -166,6 +167,7 @@ Reusable workflows live in `.agents/skills/` (pi discovers them automatically; f
 - `release` — pre-flight gates (incl. the `BASE_PATH` deploy-shape build and a workflow/dependency engine check), `git release --semver …`, Actions monitoring and failure triage.
 - `visual-check` — build → preview → Playwright probe (`.agents/skills/visual-check/scripts/shot.mjs`) → screenshot → cleanup loop, plus the known visual failure classes to assert.
 - `content-update` — Obsidian vault edit → `npm run content:sync` → diff review → scaled validation → commit.
+- `notes` — record/search project knowledge in the vault through the `obsidian` MCP server (journal/decisions/research notes with `publish: false`).
 
 ## SvelteKit 3 / Svelte 5 Gotchas (learned the hard way)
 

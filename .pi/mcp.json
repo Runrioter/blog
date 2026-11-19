@@ -1,0 +1,10 @@
+{
+	"mcpServers": {
+		"obsidian": {
+			"command": "sh",
+			"args": ["-c", "exec npx -y obsidian-mcp@2 serve --vault blog=\"$PWD/content\""],
+			"exposure": "direct",
+			"description": "Obsidian vault at content/ — read/write notes, search, tags (vault id: blog)"
+		}
+	}
+}

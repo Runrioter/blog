@@ -55,6 +55,8 @@ type TransformError = { file: string; message: string };
 
 const errors: TransformError[] = [];
 const warnings: TransformError[] = [];
+/** Vault notes carrying `publish: false` — they stay in the vault but never become routes. */
+const skipped: string[] = [];
 
 type TrailingSlash = 'ignore' | 'never' | 'always';
 
@@ -81,10 +83,10 @@ function loadSvelteConfig(): Promise<SvelteConfig> {
 function parseFrontmatter(
 	raw: string,
 	file: string
-): { meta: Record<string, string | number>; body: string } {
+): { meta: Record<string, string | number | boolean>; body: string } {
 	const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(raw);
 	if (!match) return { meta: {}, body: raw };
-	const meta: Record<string, string | number> = {};
+	const meta: Record<string, string | number | boolean> = {};
 	for (const line of match[1].split(/\r?\n/)) {
 		if (!line.trim() || line.trimStart().startsWith('#')) continue;
 		const kv = /^([A-Za-z_][\w-]*):\s*(.*)$/.exec(line);
@@ -92,9 +94,10 @@ function parseFrontmatter(
 			warnings.push({ file, message: `ignoring unsupported frontmatter line: ${line.trim()}` });
 			continue;
 		}
-		let value: string | number = kv[2].trim();
+		let value: string | number | boolean = kv[2].trim();
 		if (/^".*"$/.test(value) || /^'.*'$/.test(value)) value = value.slice(1, -1);
 		else if (/^-?\d+$/.test(value)) value = Number(value);
+		else if (value === 'true' || value === 'false') value = value === 'true';
 		meta[kv[1]] = value;
 	}
 	return { meta, body: raw.slice(match[0].length) };
@@ -112,6 +115,12 @@ function collectNotes(): Note[] {
 				walk(entryAbs, entryRel);
 			} else if (entry.isFile() && entry.name.toLowerCase().endsWith('.md')) {
 				const { meta, body } = parseFrontmatter(readFileSync(entryAbs, 'utf8'), entryRel + '.md');
+				// `publish: false` keeps a vault-only note (e.g. the agent journal) in the
+				// vault without generating a route for it.
+				if (meta.publish === false) {
+					skipped.push(entryRel);
+					continue;
+				}
 				const title =
 					typeof meta.title === 'string' ? meta.title : path.posix.basename(entryRel, '.md');
 				const order = typeof meta.order === 'number' ? meta.order : 1000;
@@ -337,6 +346,7 @@ async function run(): Promise<void> {
 	// reset per-run state (watch mode reuses the process)
 	errors.length = 0;
 	warnings.length = 0;
+	skipped.length = 0;
 
 	const config = await loadSvelteConfig();
 	const notes = collectNotes();
@@ -385,7 +395,8 @@ async function run(): Promise<void> {
 
 	for (const deleted of deleteStalePages(expected)) console.log(`  ✖ deleted stale ${deleted}`);
 	for (const warning of warnings) console.warn(`  ⚠ ${warning.file}: ${warning.message}`);
-	console.log(`[content:sync] done — ${notes.length} note(s)`);
+	for (const note of skipped) console.log(`  ○ skipped ${note} (publish: false)`);
+	console.log(`[content:sync] done — ${notes.length} note(s) published, ${skipped.length} skipped`);
 }
 
 if (process.argv.includes('--watch')) {
