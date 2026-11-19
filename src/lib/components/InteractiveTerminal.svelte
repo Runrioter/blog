@@ -700,6 +700,14 @@
 	}
 
 	:global(.terminal-host .xterm-viewport) {
+		/* xterm.css hard-codes background-color: #000 here; it fills the whole
+		 * pane behind .xterm-screen, so the sliver below the fitted grid shows
+		 * as a black band (glaring in light mode). Paint it with the theme's
+		 * deep background instead — it matches the xterm palette background
+		 * (--bg-deep: #ffffff light / #0d1117 dark), so a short grid blends
+		 * seamlessly. The element itself is xterm's scroll container and must
+		 * stay. */
+		background-color: var(--bg-deep);
 		overflow-y: auto !important;
 	}
 </style>
