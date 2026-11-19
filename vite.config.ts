@@ -7,7 +7,8 @@ import { mdsvex } from 'mdsvex';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { rehypeHeadingIds } from './scripts/heading-slug.js';
 import tailwindcss from '@tailwindcss/vite';
-import pkg from './package.json';
+// import attributes keep vite 8's native config loader happy (no warning)
+import pkg from './package.json' with { type: 'json' };
 
 /**
  * The shipped release version = the latest `v*` git tag (the deployment is
