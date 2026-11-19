@@ -117,7 +117,9 @@ export const shellTerminalProfile: TerminalProfile = {
 	],
 	hint: 'Try: help, whoami, cat README.md, open basics, open github — or click the document pane',
 	introLines: (date) => [
-		'Runrioter Blog Agent v1.0',
+		// Version = the released `v*` git tag, injected at compile time
+		// (see vite.config.ts → __APP_VERSION__, app.d.ts).
+		`Runrioter Blog Agent v${__APP_VERSION__}`,
 		`Date: ${date}`,
 		'',
 		'Navigate with commands (`open`, `cd`), or click links in the document pane.',
