@@ -1,8 +1,6 @@
 # Release workflow — see .agents/skills/release/SKILL.md.
 #
-#   make release            # patch bump
-#   make release BUMP=minor # minor bump
-#   make release BUMP=major # major bump
+#   make release            # patch bump (also: BUMP=minor, BUMP=major)
 #   make preflight          # validation gates only
 
 BUMP ?= patch
@@ -12,16 +10,16 @@ REPO_NAME ?= blog
 
 .PHONY: release preflight
 
-# Tag the release only after package.json (and package-lock.json) carry the new
-# version, per npm project convention. `npm version --no-git-tag-version` bumps
-# the files without committing or tagging; `git release` commits, tags and
-# pushes. A final check guarantees the tag and package.json agree.
+# Release: pre-flight, then the native npm versioning flow —
+#   npm version <bump> -m "Release v%s"
+# bumps package.json + package-lock.json, commits "Release vX.Y.Z" and tags
+# vX.Y.Z in one atomic step (singleton source of truth), then `git push
+# --follow-tags` ships the commit and the tag. npm version refuses to run on
+# a dirty working tree, so commit/stash any WIP first.
 release: preflight
-	npm version $(BUMP) --no-git-tag-version
-	git release --semver $(BUMP)
-	@[ "v$$(node -p "require('./package.json').version")" = "$$(git describe --tags --abbrev=0)" ] \
-		|| (echo 'ERROR: package.json version and git tag diverged' >&2 && exit 1)
-	@echo "✓ released v$$(node -p "require('./package.json').version")"
+	npm version $(BUMP) -m "Release v%s"
+	git push --follow-tags
+	@echo '✓ released v$(shell node -p 'require("./package.json").version')'
 
 preflight:
 	npm run check

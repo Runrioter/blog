@@ -165,7 +165,7 @@ Before finishing UI/layout work, verify all of the following still hold:
 
 Reusable workflows live in `.agents/skills/` (pi discovers them automatically; force with `/skill:<name>`):
 
-- `release` — pre-flight gates (incl. the `BASE_PATH` deploy-shape build and a workflow/dependency engine check), `git release --semver …`, Actions monitoring and failure triage.
+- `release` — pre-flight gates (incl. the `BASE_PATH` deploy-shape build and a workflow/dependency engine check), `make release [BUMP=…]` (native `npm version` bump + tag + push), Actions monitoring and failure triage.
 - `visual-check` — build → preview → Playwright probe (`.agents/skills/visual-check/scripts/shot.mjs`) → screenshot → cleanup loop, plus the known visual failure classes to assert.
 - `content-update` — Obsidian vault edit → `npm run content:sync` → diff review → scaled validation → commit.
 - `notes` — record/search project knowledge in the vault through the `obsidian` MCP server (journal/decisions/research notes with `publish: false`).

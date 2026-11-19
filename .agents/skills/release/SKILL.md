@@ -1,6 +1,6 @@
 ---
 name: release
-description: Ship a blog release — full pre-flight validation (including the BASE_PATH deploy-shape build and a CI engine check), then `git release` and monitor the GitHub Pages Actions run. Use when cutting a tag, running `git release`, deploying, or investigating a failed Pages deployment.
+description: Ship a blog release — full pre-flight validation (including the BASE_PATH deploy-shape build and a CI engine check), then `make release` (native `npm version` bump + tag) and monitor the GitHub Pages Actions run. Use when cutting a tag, running `make release`, deploying, or investigating a failed Pages deployment.
 ---
 
 # Release (GitHub Pages deploy)
@@ -17,22 +17,18 @@ make release BUMP=minor  # minor bump (BUMP=major for major)
 make preflight           # validation gates only
 ```
 
-The `release` target (see `Makefile`) runs the full pre-flight, then:
+The `release` target (see `Makefile`) runs the full pre-flight, then the **native npm versioning flow**:
 
-1. `npm version <bump> --no-git-tag-version` — bumps `package.json` + `package-lock.json` to the new version (npm project convention) **without** committing or tagging.
-2. `git release --semver <bump>` — commits "Release vX.Y.Z", tags, pushes.
-3. A final check fails the target if the git tag and `package.json` version diverged.
+1. `npm version <bump> -m "Release v%s"` — bumps `package.json` + `package-lock.json`, commits `Release vX.Y.Z` and tags `vX.Y.Z` in one atomic step (npm only commits the version files and requires a clean working tree — commit/stash any WIP first).
+2. `git push --follow-tags` — ships the commit and the tag.
+
+`package.json`'s version is the single source of truth — it must equal the latest tag before bumping (kept in sync by this flow; if it ever drifts, align it manually first: `npm version 0.0.X --no-git-tag-version`, commit, then release).
 
 Pre-flight gates (never skip): `npm run check`, `npm run lint`, `npm run test:unit -- --run`, `npm run test:e2e`, `npm run build`, `BASE_PATH=/<repo> npm run build`, `node .agents/skills/release/scripts/ci-engine-check.mjs`.
 
 - The `BASE_PATH` build is the only local approximation of what production ships. Link/resolve bugs (double base like `/blog/blog/x`, missing base) only surface there — never skip it. The Makefile defaults `REPO_NAME=blog`; override with `make release REPO_NAME=<name>` for other remotes.
 - `ci-engine-check` compares the workflow's `node-version` against the `engines` ranges of the packages that run during the build. It is the check that would have caught the v0.0.8 failure (workflow pinned node 20 while `@sveltejs/kit` 3.2 requires `>=22.17`). If it fails, bump `node-version` in the workflow (24 is the current LTS and the local version).
-- If `git release` fails after `npm version` bumped the files: **do not re-tag blindly** — either fix and re-run `make release`, or roll back the version bump with `git checkout -- package.json package-lock.json`.
-- Manual (equivalent) invocation — use only for one-off releases:
-
-  ```sh
-  npm version patch --no-git-tag-version && git release --semver patch
-  ```
+- Failure notes: if `npm version` fails **after** committing (e.g. the new tag already exists), it leaves the commit and the bumped files behind — `git reset --hard HEAD~1` rolls both back. A dirty working tree makes `npm version` refuse to start (by design). A failed `git push` is safe to just retry.
 
 ## 3. Post-release
 
