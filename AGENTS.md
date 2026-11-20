@@ -169,6 +169,7 @@ Reusable workflows live in `.agents/skills/` (pi discovers them automatically; f
 - `visual-check` — build → preview → Playwright probe (`.agents/skills/visual-check/scripts/shot.mjs`) → screenshot → cleanup loop, plus the known visual failure classes to assert.
 - `content-update` — Obsidian vault edit → `npm run content:sync` → diff review → scaled validation → commit.
 - `notes` — record/search project knowledge in the vault through the `obsidian` MCP server (journal/decisions/research notes with `publish: false`).
+- `dependabot` — audit/merge dependabot dep-update PRs: staleness + conflict checks, changelog/breaking analysis, full-gate verification, adaptation refactors, and vault reports for severe incompatibilities.
 
 ## SvelteKit 3 / Svelte 5 Gotchas (learned the hard way)
 
