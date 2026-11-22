@@ -3,6 +3,7 @@
 	import type { Path } from '$app/types';
 	import { tocItems as aiToc } from './(tutorials)/ai/toc';
 	import { tocItems as awsToc } from './(tutorials)/aws/toc';
+	import { tocItems as devToc } from './(tutorials)/dev/toc';
 
 	const cssToc = [
 		{ path: 'css/bfc', label: 'Block Formatting Context' },
@@ -36,6 +37,12 @@
 			path: 'aws',
 			description: '可部署、可回滚的基础设施即代码实践。',
 			items: awsToc
+		},
+		{
+			name: 'Dev 工程实践',
+			path: 'dev',
+			description: 'Makefile 与 shell 语法边界的工程排错笔记。',
+			items: devToc
 		}
 	];
 </script>

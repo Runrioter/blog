@@ -25,6 +25,7 @@ export const shellTerminalProfile: TerminalProfile = {
 			'ai',
 			'css',
 			'aws',
+			'dev',
 			'about',
 			'topics',
 			'README.md',
@@ -33,10 +34,11 @@ export const shellTerminalProfile: TerminalProfile = {
 			'writing-style.txt',
 			'links.txt'
 		],
-		'/topics': ['ai', 'css', 'aws', 'about'],
+		'/topics': ['ai', 'css', 'aws', 'dev', 'about'],
 		'/ai': ['basics', 'system-instructions', 'agent-design', 'formatting'],
 		'/css': ['bfc', 'contain', 'flex', 'position'],
 		'/aws': ['cloudformation'],
+		'/dev': ['makefile-shell-quoting'],
 		'/about': ['profile.txt', 'focus.txt', 'writing-style.txt', 'links.txt']
 	},
 	files: {
@@ -63,6 +65,7 @@ export const shellTerminalProfile: TerminalProfile = {
 		'/ai/intro': 'AI prompt engineering: from first principles to agent-ready prompts.',
 		'/css/intro': 'CSS layout: BFC, contain, flexbox, positioning, predictable behavior.',
 		'/aws/intro': 'AWS: deployable and rollback-friendly infrastructure notes.',
+		'/dev/intro': 'Dev engineering: build tooling, make/shell syntax boundaries, debugging notes.',
 		'/ai/basics': 'Prompt basics: objective, constraints, context, and expected output.',
 		'/ai/system-instructions':
 			'System instructions: define authority, safety boundary, and response contract.',
@@ -74,7 +77,9 @@ export const shellTerminalProfile: TerminalProfile = {
 		'/css/flex': 'Flexbox: main axis, cross axis, alignment, and shrink/grow trade-offs.',
 		'/css/position': 'Positioning: static/relative/absolute/fixed/sticky and containing blocks.',
 		'/aws/cloudformation':
-			'CloudFormation: declarative infra with change sets and rollback-first deployment.'
+			'CloudFormation: declarative infra with change sets and rollback-first deployment.',
+		'/dev/makefile-shell-quoting':
+			'Makefile/shell quoting: why a backslash escape inside $(...) broke the release log.'
 	},
 	internalRoutes: {
 		home: '',
@@ -82,10 +87,12 @@ export const shellTerminalProfile: TerminalProfile = {
 		ai: 'ai',
 		css: 'css',
 		aws: 'aws',
+		dev: 'dev',
 		about: 'about',
 		'/ai': 'ai',
 		'/css': 'css',
 		'/aws': 'aws',
+		'/dev': 'dev',
 		'/about': 'about',
 		basics: 'ai/basics',
 		'system-instructions': 'ai/system-instructions',
@@ -104,7 +111,9 @@ export const shellTerminalProfile: TerminalProfile = {
 		'/css/flex': 'css/flex',
 		'/css/position': 'css/position',
 		cloudformation: 'aws/cloudformation',
-		'/aws/cloudformation': 'aws/cloudformation'
+		'/aws/cloudformation': 'aws/cloudformation',
+		'makefile-shell-quoting': 'dev/makefile-shell-quoting',
+		'/dev/makefile-shell-quoting': 'dev/makefile-shell-quoting'
 	},
 	helpExamples: [
 		'whoami',
