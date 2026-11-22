@@ -298,7 +298,7 @@
 	.pane-divider:hover .divider-grip,
 	.pane-divider:focus-visible .divider-grip,
 	.agent-body.dragging .pane-divider .divider-grip {
-		background: var(--green);
+		background: var(--accent);
 		width: 3.5rem;
 	}
 

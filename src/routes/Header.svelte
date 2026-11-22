@@ -124,12 +124,12 @@
 	}
 
 	.ts-btn.active {
-		background: var(--green-soft);
-		color: var(--green);
+		background: var(--accent-soft);
+		color: var(--accent);
 	}
 
 	.ts-btn:focus-visible {
-		outline: 2px solid var(--green);
+		outline: 2px solid var(--accent);
 		outline-offset: 1px;
 	}
 </style>

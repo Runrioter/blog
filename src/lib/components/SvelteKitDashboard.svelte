@@ -40,13 +40,13 @@
 	}
 
 	.term-toggle.active {
-		border-color: color-mix(in oklab, var(--green) 55%, transparent);
-		background: var(--green-soft);
-		color: var(--green);
+		border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+		background: var(--accent-soft);
+		color: var(--accent);
 	}
 
 	.term-toggle:focus-visible {
-		outline: 2px solid var(--green);
+		outline: 2px solid var(--accent);
 		outline-offset: 1px;
 	}
 
@@ -58,7 +58,7 @@
 	}
 
 	.term-toggle.active .dot-indicator {
-		background: var(--green);
-		box-shadow: 0 0 6px color-mix(in oklab, var(--green) 70%, transparent);
+		background: var(--accent);
+		box-shadow: 0 0 6px color-mix(in oklab, var(--accent) 70%, transparent);
 	}
 </style>

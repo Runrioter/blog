@@ -31,9 +31,9 @@
 		line-height: 1;
 		padding: 0.3rem 0.55rem;
 		border-radius: 999px;
-		border: 1px solid color-mix(in oklab, var(--color-accent, #3fb950) 35%, transparent);
-		color: var(--color-accent, #3fb950);
-		background: color-mix(in oklab, var(--color-accent, #3fb950) 8%, transparent);
+		border: 1px solid color-mix(in oklab, var(--color-accent, #ff3e00) 35%, transparent);
+		color: var(--color-accent, #ff3e00);
+		background: color-mix(in oklab, var(--color-accent, #ff3e00) 8%, transparent);
 		user-select: none;
 	}
 </style>

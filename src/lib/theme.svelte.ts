@@ -88,9 +88,9 @@ export const xtermPalettes: Record<'light' | 'dark', XtermPalette> = {
 	dark: {
 		background: '#0d1117',
 		foreground: '#c9d1d9',
-		cursor: '#3fb950',
+		cursor: '#ff3e00',
 		black: '#0d1117',
-		green: '#3fb950',
+		green: '#ff3e00',
 		blue: '#58a6ff',
 		red: '#f85149',
 		yellow: '#d29922',
@@ -99,9 +99,9 @@ export const xtermPalettes: Record<'light' | 'dark', XtermPalette> = {
 	light: {
 		background: '#ffffff',
 		foreground: '#1f2328',
-		cursor: '#1a7f37',
+		cursor: '#c2410c',
 		black: '#24292f',
-		green: '#1a7f37',
+		green: '#c2410c',
 		blue: '#0969da',
 		red: '#cf222e',
 		yellow: '#9a6700',

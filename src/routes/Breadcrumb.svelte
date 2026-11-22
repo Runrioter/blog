@@ -77,7 +77,7 @@
 	/* Green on hover/focus = "clickable, navigates there" */
 	.crumb:hover,
 	.crumb:focus-visible {
-		color: var(--color-accent, #3fb950);
+		color: var(--color-accent, #ff3e00);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}

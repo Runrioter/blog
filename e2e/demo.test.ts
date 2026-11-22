@@ -89,12 +89,12 @@ test('breadcrumb path navigates and highlights on hover', async ({ page }) => {
 	await page.locator('.breadcrumb .crumb').filter({ hasText: '~' }).click();
 	await expect(page).toHaveURL(/\/$/);
 	// Hovering a crumb highlights it green (clickable affordance) — the exact
-	// green comes from the theme token (dark #3fb950, light #1a7f37).
+	// accent comes from the theme token (dark #ff3e00, light #c2410c).
 	await page.getByRole('link', { name: '基础概念' }).first().click();
 	const aiCrumb = page.locator('.breadcrumb .crumb').filter({ hasText: 'ai' });
 	await aiCrumb.hover();
 	const accent = await page.evaluate(() => {
-		const hex = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+		const hex = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
 		const n = parseInt(hex.slice(1), 16);
 		return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
 	});

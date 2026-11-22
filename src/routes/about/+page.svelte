@@ -81,7 +81,7 @@
 
 	.bullets li::before {
 		content: '▸ ';
-		color: var(--green);
+		color: var(--accent);
 	}
 
 	a {
