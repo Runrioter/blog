@@ -7,7 +7,7 @@ export type TocItem = { path: TocPath; label: string };
 
 export const tocItems: TocItem[] = [
 	{
-		path: 'dev/makefile-shell-quoting' satisfies TocPath,
+		path: 'dev/makefile-shell-quoting.md' satisfies TocPath,
 		label: 'Makefile 里 echo 版本为空：shell 命令替换的引号上下文'
 	}
 ];

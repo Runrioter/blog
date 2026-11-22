@@ -75,6 +75,21 @@
 		return rel.replace(/^\//, '');
 	}
 
+	// Echo contract: terminal treats articles as .md files and sections as
+	// bare directories. Derived from the profile's dirs (top-level keys).
+	const sectionDirs = new Set(
+		Object.keys(shellTerminalProfile.dirs)
+			.map((d) => d.slice(1))
+			.filter(Boolean)
+	);
+
+	function echoTarget(target: string): string {
+		// Routes already carry the convention: sections are bare dirs, articles
+		// are .md (e.g. /ai/basics.md) — echo them exactly as the URL shows.
+		if (target === '') return 'home';
+		return target;
+	}
+
 	$effect(() => {
 		const onPop = () => {
 			navSource = 'history';
@@ -93,7 +108,7 @@
 			return;
 		}
 		const target = routePath(current);
-		api?.echoCommand(`open ${target === '' ? 'home' : target}`);
+		api?.echoCommand(`open ${echoTarget(target)}`);
 	});
 </script>
 

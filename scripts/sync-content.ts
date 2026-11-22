@@ -14,7 +14,7 @@
  *   - `--watch` re-runs on vault changes.
  *
  * Vault conventions (keep your Obsidian setup minimal — core features only):
- *   - content/<section>/<name>.md  →  route /<section>/<name>/
+ *   - content/<section>/<name>.md  →  route /<section>/<name>.md (articles carry the .md suffix)
  *   - [[wikilinks]] resolve by note basename and become relative links
  *   - ![[image.png]] (anywhere in the vault) is copied to static/uploads/<section>/
  *   - Callouts (> [!note] ...) degrade to plain blockquotes
@@ -286,7 +286,7 @@ function transformBody(note: Note, notes: Note[], config: SvelteConfig): string 
 			return undefined;
 		}
 		if (targetNote) {
-			return `${toBase(path.posix.join(targetNote.dir, targetNote.name))}${fragment}`;
+			return `${toBase(path.posix.join(targetNote.dir, targetNote.name + '.md'))}${fragment}`;
 		}
 		// Not a note — maybe media referenced with a path
 		const vaultFile = findVaultFile(rawPath, note.dir);
@@ -396,7 +396,7 @@ function generateToc(section: string, sectionNotes: Note[]): string {
 		'',
 		'export const tocItems: TocItem[] = [',
 		...items.map((note, index) => {
-			const line = `\t{ path: '${path.posix.join(section, note.name)}' satisfies TocPath, label: '${note.title.replace(/'/g, `\\'`)}' }`;
+			const line = `\t{ path: '${path.posix.join(section, note.name + '.md')}' satisfies TocPath, label: '${note.title.replace(/'/g, `\\'`)}' }`;
 			return index === items.length - 1 ? line : `${line},`;
 		}),
 		'];'
@@ -418,6 +418,8 @@ function deleteStalePages(expected: Set<string>): string[] {
 					const dir = path.dirname(page);
 					if (readdirSync(dir).length === 0) rmSync(dir, { recursive: true });
 					deleted.push(path.relative(process.cwd(), page));
+					// the dir may have just been removed — do not recurse into it
+					continue;
 				}
 			}
 			walk(path.join(abs, entry.name));
@@ -454,7 +456,7 @@ async function run(): Promise<void> {
 
 	const expected = new Set<string>();
 	for (const note of notes) {
-		const dest = path.join(ROUTES_DIR, note.dir, note.name, '+page.svx');
+		const dest = path.join(ROUTES_DIR, note.dir, note.name + '.md', '+page.svx');
 		mkdirSync(path.dirname(dest), { recursive: true });
 		writeFileSync(dest, generatePage(note, transformed.get(note.rel)!));
 		expected.add(dest);

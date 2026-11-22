@@ -56,21 +56,21 @@ test('clicking a TOC link navigates the document pane and echoes in the terminal
 	await page.goto('/');
 	await openTerminal(page);
 	await page.getByRole('link', { name: '基础概念' }).click();
-	await expect(page).toHaveURL(/\/ai\/basics$/);
+	await expect(page).toHaveURL(/\/ai\/basics\.md$/);
 	await expect(
 		page.locator('.doc-scroll').getByRole('heading', { name: '基础概念' })
 	).toBeVisible();
 	// the terminal echoes the navigation as if it were a command
-	await expect(page.locator('.xterm-rows')).toContainText('open ai/basics');
+	await expect(page.locator('.xterm-rows')).toContainText('open ai/basics.md');
 });
 
 test('terminal open command navigates', async ({ page }) => {
 	await page.goto('/');
 	await openTerminal(page);
 	await page.locator('.agent-terminal').click();
-	await page.keyboard.type('open about');
+	await page.keyboard.type('open about.md');
 	await page.keyboard.press('Enter');
-	await expect(page).toHaveURL(/\/about$/);
+	await expect(page).toHaveURL(/\/about\.md$/);
 	// {#key} + fade keeps the outgoing doc in the DOM for 140ms, so filter to the new one
 	await expect(page.locator('.agent-docs h1').filter({ hasText: 'About' })).toHaveText('About');
 });
@@ -78,10 +78,11 @@ test('terminal open command navigates', async ({ page }) => {
 test('breadcrumb path navigates and highlights on hover', async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('link', { name: '基础概念' }).first().click();
-	await expect(page).toHaveURL(/\/ai\/basics$/);
-	// The path indicator is now the breadcrumb: ~ / ai / basics
+	await expect(page).toHaveURL(/\/ai\/basics\.md$/);
+	// The path indicator is now the breadcrumb: ~ / ai / basics.md (article
+	// segments keep the .md suffix, mirroring the URL and terminal naming)
 	const crumbs = page.locator('.breadcrumb .crumb');
-	await expect(crumbs).toHaveText(['~', 'ai', 'basics']);
+	await expect(crumbs).toHaveText(['~', 'ai', 'basics.md']);
 	// Ancestor segment: clicking "ai" jumps to the AI section
 	await crumbs.filter({ hasText: 'ai' }).click();
 	await expect(page).toHaveURL(/\/ai$/);

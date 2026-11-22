@@ -3,10 +3,10 @@
 	import type { Path } from '$app/types';
 
 	const items = [
-		{ path: 'css/bfc', label: 'Block Formatting Context' },
-		{ path: 'css/contain', label: 'Contain' },
-		{ path: 'css/flex', label: 'Flex' },
-		{ path: 'css/position', label: 'Position' }
+		{ path: 'css/bfc.md', label: 'Block Formatting Context' },
+		{ path: 'css/contain.md', label: 'Contain' },
+		{ path: 'css/flex.md', label: 'Flex' },
+		{ path: 'css/position.md', label: 'Position' }
 	] as const satisfies { path: Path; label: string }[];
 </script>
 

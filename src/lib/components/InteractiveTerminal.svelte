@@ -69,7 +69,7 @@
 		cd: ['cd <path>', 'Change current virtual directory.'],
 		pwd: ['pwd', 'Print current virtual directory.'],
 		cat: ['cat <file>', 'Print virtual file content.'],
-		open: ['open <target>', 'Open internal route target or external url.'],
+		open: ['open <target>', 'Open a section dir, an article (.md), or an external url.'],
 		clear: ['clear', 'Clear terminal output area.'],
 		whoami: ['whoami', 'Print author identity.'],
 		ll: ['ll', 'Alias for: ls -la'],
@@ -319,7 +319,7 @@
 				writeLine('  cd <path>           Change virtual folder');
 				writeLine('  pwd                 Print current virtual folder');
 				writeLine('  cat <file>          Print virtual file content');
-				writeLine('  open <target>       Open route/url (e.g. github, ai, https://...)');
+				writeLine('  open <target>       Open dir / article.md / url (e.g. ai, about.md, github)');
 				writeLine('  clear               Clear terminal output');
 				writeLine('  whoami              Print author identity');
 				writeLine('');

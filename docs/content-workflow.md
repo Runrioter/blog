@@ -24,14 +24,14 @@ agent/project journal notes that should live in the vault without becoming a pag
 ```
 content/
 ├── ai/
-│   ├── basics.md          →  route /ai/basics/   (src/routes/(tutorials)/ai/basics/+page.svx)
+│   ├── basics.md          →  route /ai/basics.md   (src/routes/(tutorials)/ai/basics.md/+page.svx)
 │   └── attachments/       →  images copied to static/uploads/ai/
 └── aws/
-    └── cloudformation.md  →  route /aws/cloudformation/
+    └── cloudformation.md  →  route /aws/cloudformation.md
 ```
 
-- Folder = route section, note basename = route segment. Vault root level notes map to
-  `/<name>/`.
+- Folder = route section, note basename = route segment. **Article routes carry a
+  `.md` suffix** (`/ai/basics.md`, matching the terminal's file naming); sections are bare.
 - Frontmatter (simple `key: value` YAML; arrays supported):
   - `title` — page `<title>`, TOC label, wikilink label (defaults to the filename)
   - `description` — meta description
@@ -49,7 +49,7 @@ content/
 
 ## Generated output
 
-- `src/routes/(tutorials)/<section>/<name>/+page.svx` — mdsvex page: marker comment, empty
+- `src/routes/(tutorials)/<section>/<name>.md/+page.svx` — mdsvex page: marker comment, empty
   `<script lang="ts">` header, optional `<svelte:head>` (title/description), transformed body.
 - `src/routes/(tutorials)/<section>/toc.ts` — `tocItems` consumed by section layouts (e.g.
   `ai/+layout.svelte`). Add a new note and the TOC updates automatically.

@@ -6,5 +6,5 @@ type TocPath = ReturnType<AppTypes['Path']>; // union of all real routes (genera
 export type TocItem = { path: TocPath; label: string };
 
 export const tocItems: TocItem[] = [
-	{ path: 'aws/cloudformation' satisfies TocPath, label: 'CloudFormation' }
+	{ path: 'aws/cloudformation.md' satisfies TocPath, label: 'CloudFormation' }
 ];

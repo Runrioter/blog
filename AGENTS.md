@@ -103,7 +103,8 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 - No top-level tab bar exists. Navigation happens by (a) clicking links in the document pane, or (b) terminal commands (`open <route>`, `cd`).
 - Terminal navigation uses SvelteKit `goto()` (soft navigation — real URL changes, prerender-compatible). Never `window.location.href`.
 - Document-pane link clicks echo a pseudo command line into the terminal (the layout watches `page.url.pathname` and calls the terminal's `echoCommand` API); terminal-initiated navigation and back/forward are intentionally not echoed. Do not remove this sync behavior without a reason.
-- Route/URL structure is unchanged and is the source of truth for the right pane: `/` = welcome + table of contents, `/about` = about doc, `/ai`/`/css`/`/aws` = section TOC docs (landing pages), articles render their generated/handwritten content.
+- Route/URL structure is the source of truth for the right pane: `/` = welcome + table of contents, `/ai`/`/css`/`/aws`/`/dev` = section TOC docs (landing pages), articles render their generated/handwritten content.
+- **Article-route naming contract (`.md` suffix)**: article URLs carry a `.md` segment — `/ai/basics.md`, `/about.md`, `/css/bfc.md` — while section/landing routes stay bare (`/ai`). The terminal mirrors this exactly: articles are `.md` files, sections are bare dirs, and bare article names are **rejected** (0 compatibility). This applies to generated routes (sync-content.ts appends `.md`) AND handwritten ones (css tutorials, about — their route dirs are literally named `bfc.md`, `about.md`). When adding a page: implement it as a `.md` route, update the home `+page.svelte` toc entries and `#lib/terminal-profiles.ts` (dirs/files/internalRoutes) to the same naming, and keep examples in the home intro/terminal help in `.md` form.
 
 ### Route/Link Safety
 

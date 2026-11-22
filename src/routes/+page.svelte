@@ -6,10 +6,10 @@
 	import { tocItems as devToc } from './(tutorials)/dev/toc';
 
 	const cssToc = [
-		{ path: 'css/bfc', label: 'Block Formatting Context' },
-		{ path: 'css/contain', label: 'Contain' },
-		{ path: 'css/flex', label: 'Flex' },
-		{ path: 'css/position', label: 'Position' }
+		{ path: 'css/bfc.md', label: 'Block Formatting Context' },
+		{ path: 'css/contain.md', label: 'Contain' },
+		{ path: 'css/flex.md', label: 'Flex' },
+		{ path: 'css/position.md', label: 'Position' }
 	] as const satisfies { path: Path; label: string }[];
 
 	type TocItem = { path: Path; label: string };
@@ -51,7 +51,7 @@
 	<title>Runrioter Blog</title>
 	<meta
 		name="description"
-		content="CSS layout, AWS infrastructure, and AI prompt engineering notes. Browse the table of contents, or drive the interactive terminal."
+		content="AI prompt engineering, CSS layout, AWS infrastructure, and dev tooling notes. Browse the table of contents, or open the terminal for command navigation."
 	/>
 </svelte:head>
 
@@ -59,9 +59,11 @@
 	<h1>Runrioter Blog</h1>
 
 	<p class="intro">
-		这个站点跑在一个终端 agent 里：<strong>左侧</strong>是交互终端（<code>help</code>
-		查看全部命令），<strong>右侧</strong>是当前文档。你可以用命令导航（<code>open ai/basics</code
-		>、<code>cd css</code>），也可以直接点击下面的目录。
+		一个终端风格的文档站：<strong>文档</strong>是主角，下方目录可直接点击阅读；需要交互时，点击底部
+		<code>Terminal</code>
+		按钮唤出命令行（<code>open about.md</code>、<code>cd ai</code>），也可以用
+		<code>help</code>
+		查看全部命令。
 	</p>
 
 	<h2>目录</h2>
@@ -81,7 +83,7 @@
 	{/each}
 
 	<div class="section">
-		<h3><a href={resolve('about')}>About</a></h3>
+		<h3><a href={resolve('about.md')}>About</a></h3>
 		<p class="section-desc">作者、写作风格与链接。</p>
 	</div>
 </div>
