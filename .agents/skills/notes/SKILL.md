@@ -69,6 +69,21 @@ updated: YYYY-MM-DD
 - `obsidian_edit_note` takes an optional `if_match` (etag from `obsidian_read_note`) — pass it when editing a note you just read, so a concurrent Obsidian edit is not clobbered.
 - Renaming a note: `obsidian_move_note` (updates backlinks transactionally). Prefer renaming over duplicating content.
 
+## Editing safety (learned the hard way)
+
+- **`obsidian_edit_note` with `operation: 'replace'` replaces the WHOLE note** — frontmatter AND body. To edit an existing note, first `obsidian_read_note` to get the full current content, then send the complete new content (frontmatter + body) — a replace that only carries the frontmatter silently wipes the body.
+- Always pass `if_match` (the etag from your read) when replacing, so a concurrent Obsidian edit surfaces a `REVISION_CONFLICT` instead of a silent overwrite.
+
+## Markdown hygiene (content lands in .md files)
+
+Every note is a Markdown file rendered by Obsidian — keep the syntax valid:
+
+- After creating/editing a note, **re-read it** (`obsidian_read_note`) and eyeball the structure: fenced code blocks closed, table pipes aligned, quote blocks intact.
+- Inline code spans need a _matching pair_ of backticks — a lone backtick and stray double-backtick nesting (` ` ` `` ``) parse unpredictably in Obsidian. To show a literal backtick character inside quoted prose, use the HTML entity `&#96;` instead of nesting.
+- Fenced code blocks (```lang) accept anything literally — put commands, shell one-liners, and `"`/`$()`/backticks inside fences instead of fighting inline spans.
+- Links: `<https://…>` autolinks are fine; avoid raw URLs with `|` or parentheses outside autolinks.
+- When quoting official docs, keep the quote exact but re-render its characters with the above rules (backticks → `&#96;` in prose, code examples → fences).
+
 ## After writing
 
 - Publishing a note (no `draft: true`) → run `npm run content:sync` and commit the regenerated `.svx`/`toc.ts` (see the `content-update` skill). Prose `tags` render as pill badges at the top of the generated page.
