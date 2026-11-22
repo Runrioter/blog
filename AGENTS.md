@@ -79,19 +79,24 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 
 ```
 .terminal-shell (one window: dots + title + path indicator)
-├── left pane  .agent-terminal  — the ONLY xterm terminal (persistent)
-└── right pane .agent-docs      — current route rendered as a document
+└── .agent-body (stacked vertically)
+    ├── .agent-docs   — current route rendered as a document (full width when the terminal is hidden)
+    ├── .pane-divider — horizontal divider (hidden with the terminal)
+    └── .agent-terminal — the ONLY xterm terminal (persistent, bottom block)
+        └── .term-statusbar — env info (Browser/Building/Dev/Kit) + ✕ close button
 ```
 
-### Two-Pane Agent Shell Rules
+### Agent Shell Rules
 
 - `src/routes/+layout.svelte` is the only file that defines terminal window chrome (macOS dots, title, rounded corners, clipped content, layered shadow). Preserve these cues; do not add a second window frame.
-- The xterm terminal is rendered exactly once, in the global layout left pane. Page routes must never render `InteractiveTerminal` or any other terminal/xterm of their own.
-- The left terminal is persistent across routes: do NOT wrap it in `{#key page.url.pathname}` or route it through per-page components. Navigation must not reset or remount the terminal session.
-- The right pane renders `{@render children()}` (the current route) inside `.agent-docs`; the macOS window is the only outer frame.
-- Keep the xterm pane clipped (`.agent-terminal { overflow: hidden }` — xterm's renderer can overflow its container and intercept clicks meant for the document pane).
-- On mobile (<820px) the panes stack vertically (terminal on top, ~45vh).
-- The global footer (SvelteKit dashboard + avatars) stays below the window.
+- The xterm terminal is rendered exactly once, in the global layout, as a **bottom block** (document on top, terminal below). Page routes must never render `InteractiveTerminal` or any other terminal/xterm of their own.
+- **Hidden by default**: `terminalVisible` in `+layout.svelte` gates the terminal; the footer `SvelteKitDashboard` button (`aria-pressed`) toggles it, and the status bar ✕ closes it. No localStorage — every load starts hidden.
+- While hidden the terminal stays **mounted** (`.agent-terminal.collapsed { display: none }`) — never conditionally destroy it, the xterm session (buffer/history) must survive toggles. The fit/resize machinery already handles the display:none → visible refit.
+- The terminal is persistent across routes: do NOT wrap it in `{#key page.url.pathname}` or route it through per-page components. Navigation must not reset or remount the terminal session.
+- The docs container renders `{@render children()}` (the current route) inside `.agent-docs`; the macOS window is the only outer frame.
+- The horizontal `pane-divider` drags the terminal height (`terminalPct`, clamp 25–70%). Keep the xterm pane clipped (`.agent-terminal { overflow: hidden }` — xterm's renderer can overflow its container and intercept clicks meant for the document pane).
+- On mobile (<820px) an open terminal covers the whole viewport (`position: fixed; inset: 0; z-index: 40`); the status bar ✕ is the only way out. The divider is hidden on mobile.
+- The global footer (SvelteKit dashboard toggle + avatars) stays below the window.
 
 ### Navigation Contract
 
@@ -155,8 +160,9 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 Before finishing UI/layout work, verify all of the following still hold:
 
 - Exactly one terminal window at app-frame level (`src/routes/+layout.svelte`): dots + title + path indicator, rounded corners, clipped content, subtle depth cues.
-- The xterm terminal mounts exactly once (global layout left pane) and persists across routes; no page renders a terminal of its own.
-- The right document pane renders the current route; home shows the welcome + TOC.
+- The xterm terminal mounts exactly once (global layout bottom block) and persists across routes and hide/show toggles; no page renders a terminal of its own.
+- The terminal starts hidden (`collapsed`); `aria-pressed` on the footer toggle reflects state; status bar shows env info + ✕ close.
+- The document pane renders the current route (full width when the terminal is hidden); home shows the welcome + TOC.
 - Navigation works both ways: doc links (with terminal echo) and terminal `open` (no echo, `goto()`).
 - `.agent-terminal` keeps `overflow: hidden` (xterm overflow intercepts clicks on the doc pane — covered by the e2e TOC-click test).
 - Internal navigation still passes lint rules and works with the GitHub Pages base path.

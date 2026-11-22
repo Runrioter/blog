@@ -52,7 +52,12 @@
 			{/each}
 		</div>
 
-		<Avatar logo={github} alt="Runrioter's Blog" href="https://github.com/Runrioter/blog" />
+		<Avatar
+			logo={github}
+			alt="Runrioter's Blog"
+			href="https://github.com/Runrioter/blog"
+			invertOnDark
+		/>
 	</div>
 </header>
 

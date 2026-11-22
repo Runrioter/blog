@@ -9,7 +9,7 @@
 	import SvelteKitDashboard from '#lib/components/SvelteKitDashboard.svelte';
 	import { page } from '$app/state';
 	import { fade } from 'svelte/transition';
-	import { browser } from '$app/env';
+	import { browser, building, dev, version } from '$app/env';
 
 	let { children } = $props();
 
@@ -23,13 +23,23 @@
 	let prevPath = $state(page.url.pathname);
 	let api: { echoCommand: (line: string) => void } | null = $state(null);
 
-	// Terminal pane width, in percent of the content row. Draggable via the
-	// divider between the panes; the xterm re-fits as it resizes.
+	// The terminal is hidden by default; the Dashboard button in the footer
+	// toggles it (see SvelteKitDashboard). The pane stays mounted while hidden
+	// (only display-hidden), so the xterm session survives the toggle.
+	let terminalVisible = $state(false);
+
+	// Terminal block height, in percent of the shell body. Draggable via the
+	// horizontal divider below the document pane; the xterm re-fits as it
+	// resizes.
 	let terminalPct = $state(42);
 	let dragging = $state(false);
 	let body: HTMLElement;
 
 	const clampPct = (v: number) => Math.min(70, Math.max(25, v));
+
+	function toggleTerminal() {
+		terminalVisible = !terminalVisible;
+	}
 
 	function startDrag(e: PointerEvent) {
 		if (!browser || !body) return;
@@ -41,8 +51,9 @@
 	function moveDrag(e: PointerEvent) {
 		if (!dragging || !body) return;
 		const rect = body.getBoundingClientRect();
-		if (rect.width <= 0) return;
-		terminalPct = clampPct(((e.clientX - rect.left) / rect.width) * 100);
+		if (rect.height <= 0) return;
+		// Height grows upward from the bottom edge of the shell body.
+		terminalPct = clampPct(((rect.bottom - e.clientY) / rect.height) * 100);
 	}
 
 	function endDrag() {
@@ -50,9 +61,9 @@
 	}
 
 	function nudgeDrag(e: KeyboardEvent) {
-		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+		if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 			e.preventDefault();
-			terminalPct = clampPct(terminalPct + (e.key === 'ArrowLeft' ? -2 : 2));
+			terminalPct = clampPct(terminalPct + (e.key === 'ArrowUp' ? 2 : -2));
 		}
 	}
 
@@ -98,11 +109,35 @@
 			</div>
 			<p class="terminal-title">runrioter@blog:</p>
 			<Breadcrumb onNavigate={() => (navSource = 'terminal')} />
-			<span class="agent-badge" aria-hidden="true">agent</span>
 		</div>
 
 		<div class="agent-body" class:dragging bind:this={body}>
-			<aside class="agent-terminal" aria-label="Command terminal" style:width={`${terminalPct}%`}>
+			<div class="agent-docs">
+				{#key page.url.pathname}
+					<article class="doc-scroll" transition:fade={{ duration: 140 }}>
+						{@render children()}
+					</article>
+				{/key}
+			</div>
+
+			<button
+				class="pane-divider"
+				class:hidden={!terminalVisible}
+				aria-label="Resize terminal height"
+				onpointerdown={startDrag}
+				onpointermove={moveDrag}
+				onpointerup={endDrag}
+				onkeydown={nudgeDrag}
+			>
+				<span class="divider-grip" aria-hidden="true"></span>
+			</button>
+
+			<aside
+				class="agent-terminal"
+				class:collapsed={!terminalVisible}
+				aria-label="Command terminal"
+				style:height={`${terminalPct}%`}
+			>
 				<InteractiveTerminal
 					historyKey={shellTerminalProfile.historyKey}
 					introLines={shellTerminalProfile.introLines(now)}
@@ -114,30 +149,18 @@
 					registerApi={(a) => (api = a)}
 					onSelfNavigate={() => (navSource = 'terminal')}
 				/>
+				<div class="term-statusbar" aria-label="Terminal status">
+					<span>Browser: {browser ? 'yes' : 'no'}</span>
+					<span>Building: {building ? 'yes' : 'no'}</span>
+					<span>Dev: {dev ? 'yes' : 'no'}</span>
+					<span>Kit: {new Date(parseInt(version)).toISOString().slice(0, 10)}</span>
+				</div>
 			</aside>
-			<button
-				class="pane-divider"
-				aria-label="Resize terminal and document panes"
-				onpointerdown={startDrag}
-				onpointermove={moveDrag}
-				onpointerup={endDrag}
-				onkeydown={nudgeDrag}
-			>
-				<span class="divider-grip" aria-hidden="true"></span>
-			</button>
-
-			<div class="agent-docs">
-				{#key page.url.pathname}
-					<article class="doc-scroll" transition:fade={{ duration: 140 }}>
-						{@render children()}
-					</article>
-				{/key}
-			</div>
 		</div>
 	</section>
 
 	<footer class="flex w-full items-center justify-center">
-		<SvelteKitDashboard />
+		<SvelteKitDashboard active={terminalVisible} onclick={toggleTerminal} />
 		<Avatar logo={svelte} alt="SvelteKit" href="https://sveltejs.dev" />
 	</footer>
 </div>
@@ -205,78 +228,22 @@
 		letter-spacing: 0.02em;
 	}
 
-	.agent-badge {
-		margin-left: auto;
-		padding: 0.1rem 0.42rem;
-		border: 1px solid color-mix(in oklab, var(--green) 60%, transparent);
-		border-radius: 999px;
-		background: var(--green-soft);
-		color: var(--green);
-		font-family: var(--font-mono);
-		font-size: 0.66rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
+	/* Document on top, terminal block at the bottom of the shell body. */
 	.agent-body {
 		display: flex;
+		flex-direction: column;
 		flex: 1;
 		min-height: 0;
 		background: var(--bg-deep);
 	}
 
 	.agent-body.dragging {
-		cursor: col-resize;
+		cursor: row-resize;
 		user-select: none;
 	}
 
 	.agent-body.dragging * {
 		user-select: none !important;
-	}
-
-	.agent-terminal {
-		width: 42%;
-		min-width: 220px;
-		min-height: 0;
-		overflow: hidden;
-		border-right: 1px solid var(--border);
-		display: flex;
-	}
-
-	.pane-divider {
-		width: 6px;
-		flex-shrink: 0;
-		min-height: 0;
-		margin: 0;
-		padding: 0;
-		border: 0;
-		border-radius: 3px;
-		cursor: col-resize;
-		background: transparent;
-		position: relative;
-		touch-action: none;
-	}
-
-	.pane-divider .divider-grip {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 3px;
-		height: 2.25rem;
-		border-radius: 2px;
-		background: var(--border-soft);
-	}
-
-	.pane-divider:hover .divider-grip,
-	.pane-divider:focus-visible .divider-grip,
-	.agent-body.dragging .pane-divider .divider-grip {
-		background: var(--green);
-		height: 3.5rem;
-	}
-
-	.pane-divider:focus-visible {
-		outline: none;
 	}
 
 	.agent-docs {
@@ -300,6 +267,73 @@
 		padding: 1.4rem 1.8rem 3rem;
 	}
 
+	.pane-divider {
+		height: 6px;
+		flex-shrink: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 3px;
+		cursor: row-resize;
+		background: transparent;
+		position: relative;
+		touch-action: none;
+	}
+
+	.pane-divider.hidden {
+		display: none;
+	}
+
+	.pane-divider .divider-grip {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 2.25rem;
+		height: 3px;
+		border-radius: 2px;
+		background: var(--border-soft);
+	}
+
+	.pane-divider:hover .divider-grip,
+	.pane-divider:focus-visible .divider-grip,
+	.agent-body.dragging .pane-divider .divider-grip {
+		background: var(--green);
+		width: 3.5rem;
+	}
+
+	.pane-divider:focus-visible {
+		outline: none;
+	}
+
+	.agent-terminal {
+		height: 42%;
+		flex-shrink: 0;
+		min-height: 0;
+		overflow: hidden;
+		border-top: 1px solid var(--border);
+		display: flex;
+		flex-direction: column;
+	}
+
+	.agent-terminal.collapsed {
+		display: none;
+	}
+
+	.term-statusbar {
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+		flex-shrink: 0;
+		padding: 0.14rem 0.6rem;
+		border-top: 1px solid var(--border);
+		background: var(--bg-header);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		color: var(--color-muted);
+		letter-spacing: 0.03em;
+	}
+
 	footer {
 		padding-bottom: 0.35rem;
 	}
@@ -317,22 +351,19 @@
 			display: none;
 		}
 
-		.agent-badge {
-			margin-left: auto;
-		}
-
+		/* On mobile the open terminal overlays the shell body (the document area)
+		 * — not the whole page, so the footer toggle stays reachable and is the
+		 * only way to close it. */
 		.agent-body {
-			flex-direction: column;
+			position: relative;
 		}
 
-		.agent-terminal {
-			width: 100% !important;
-			min-width: 0;
-			height: 45vh;
-			min-height: 200px;
-			overflow: hidden;
-			border-right: none;
-			border-bottom: 1px solid var(--border);
+		.agent-terminal:not(.collapsed) {
+			position: absolute;
+			inset: 0;
+			height: 100% !important;
+			z-index: 30;
+			border-top: none;
 		}
 
 		.pane-divider {
