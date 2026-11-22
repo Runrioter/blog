@@ -22,23 +22,23 @@ Blog prose follows the same rule: `ai/<slug>.md`, `aws/<slug>.md` (the note base
 
 ## Frontmatter contract (MANDATORY for every note)
 
-| Field         | Required     | Format                                       | Notes                                                                                                                                          |
-| ------------- | ------------ | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`       | ✅           | single-line string                           | Human title; journal → short phrase, prose → page `<title>` + TOC label                                                                        |
-| `publish`     | ✅ (journal) | `false` for journal/agent notes              | `false` = stays in vault, `content:sync` skips it. **A journal note without it becomes a live route**. Prose notes: omit (default = published) |
-| `created`     | ✅           | `YYYY-MM-DD` (ISO date; may append `THH:mm`) | Creation date — set once when the note is created                                                                                              |
-| `updated`     | ✅           | `YYYY-MM-DD` (ISO date; may append `THH:mm`) | **Must be refreshed to today on every content edit**                                                                                           |
-|               |              |                                              | _Applies to prose notes too — the sync ignores these extra keys_                                                                               |
-| `description` | optional     | single-line string                           | Prose notes: meta description (synced to the page)                                                                                             |
-| `order`       | optional     | integer                                      | Prose notes: TOC sort order (default 1000)                                                                                                     |
-| `tags`        | optional     | array (inline `[a, b]` or block `- a`)       | Prose notes: rendered as pill badges on the article page (display-only). Journal notes: metadata for Obsidian search, never rendered           |
+| Field         | Required     | Format                                       | Notes                                                                                                                                                    |
+| ------------- | ------------ | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | ✅           | single-line string                           | Human title; journal → short phrase, prose → page `<title>` + TOC label                                                                                  |
+| `draft`       | ✅ (journal) | `true` for journal/agent notes               | `true` = stays in vault, `content:sync` skips it. **A journal note without it becomes a live route**. Prose notes: omit or `false` (default = published) |
+| `created`     | ✅           | `YYYY-MM-DD` (ISO date; may append `THH:mm`) | Creation date — set once when the note is created                                                                                                        |
+| `updated`     | ✅           | `YYYY-MM-DD` (ISO date; may append `THH:mm`) | **Must be refreshed to today on every content edit**                                                                                                     |
+|               |              |                                              | _Applies to prose notes too — the sync ignores these extra keys_                                                                                         |
+| `description` | optional     | single-line string                           | Prose notes: meta description (synced to the page)                                                                                                       |
+| `order`       | optional     | integer                                      | Prose notes: TOC sort order (default 1000)                                                                                                               |
+| `tags`        | optional     | array (inline `[a, b]` or block `- a`)       | Prose notes: rendered as pill badges on the article page (display-only). Journal notes: metadata for Obsidian search, never rendered                     |
 
 Template for a new journal/agent note:
 
 ```markdown
 ---
 title: <short phrase>
-publish: false
+draft: true
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -56,10 +56,10 @@ updated: YYYY-MM-DD
 
 ## Where to write
 
-| Kind                                   | Path                            | Published?                                                              |
-| -------------------------------------- | ------------------------------- | ----------------------------------------------------------------------- |
-| Project journal / decisions / research | `journal/<slug>.md`             | **No** — `publish: false` keeps it in the vault; no route, no TOC entry |
-| Blog prose                             | `ai/<slug>.md`, `aws/<slug>.md` | Yes — becomes `/{section}/{slug}`                                       |
+| Kind                                   | Path                            | Published?                                                           |
+| -------------------------------------- | ------------------------------- | -------------------------------------------------------------------- |
+| Project journal / decisions / research | `journal/<slug>.md`             | **No** — `draft: true` keeps it in the vault; no route, no TOC entry |
+| Blog prose                             | `ai/<slug>.md`, `aws/<slug>.md` | Yes — becomes `/{section}/{slug}`                                    |
 
 ## Rules
 
@@ -71,6 +71,6 @@ updated: YYYY-MM-DD
 
 ## After writing
 
-- Publishing a note (no `publish: false`) → run `npm run content:sync` and commit the regenerated `.svx`/`toc.ts` (see the `content-update` skill). Prose `tags` render as pill badges at the top of the generated page.
+- Publishing a note (no `draft: true`) → run `npm run content:sync` and commit the regenerated `.svx`/`toc.ts` (see the `content-update` skill). Prose `tags` render as pill badges at the top of the generated page.
 - A journal note → nothing to build; it never reaches the site.
 - Never hand-edit generated `.svx`/`toc.ts` — edit the vault note and re-sync.

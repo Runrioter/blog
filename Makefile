@@ -19,7 +19,9 @@ REPO_NAME ?= blog
 release: preflight
 	npm version $(BUMP) -m "Release v%s"
 	git push --follow-tags
-	@tag=$$(git describe --tags --abbrev=0); echo "✓ released $${tag#v}"
+	# NOTE: inside $(...), quoting starts fresh — single quotes, no backslash
+	# escapes ("\"" would reach node literally and fail). $$ is the make layer.
+	@echo "✓ released v$$(node -p 'require("./package.json").version')"
 
 preflight:
 	npm run check

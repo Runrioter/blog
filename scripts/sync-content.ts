@@ -56,7 +56,7 @@ type TransformError = { file: string; message: string };
 
 const errors: TransformError[] = [];
 const warnings: TransformError[] = [];
-/** Vault notes carrying `publish: false` — they stay in the vault but never become routes. */
+/** Vault notes carrying `draft: true` — they stay in the vault but never become routes. */
 const skipped: string[] = [];
 
 type TrailingSlash = 'ignore' | 'never' | 'always';
@@ -172,9 +172,9 @@ function collectNotes(): Note[] {
 				walk(entryAbs, entryRel);
 			} else if (entry.isFile() && entry.name.toLowerCase().endsWith('.md')) {
 				const { meta, body } = parseFrontmatter(readFileSync(entryAbs, 'utf8'), entryRel + '.md');
-				// `publish: false` keeps a vault-only note (e.g. the agent journal) in the
+				// `draft: true` keeps a vault-only note (e.g. the agent journal) in the
 				// vault without generating a route for it.
-				if (meta.publish === false) {
+				if (meta.draft === true) {
 					skipped.push(entryRel);
 					continue;
 				}
@@ -480,7 +480,7 @@ async function run(): Promise<void> {
 
 	for (const deleted of deleteStalePages(expected)) console.log(`  ✖ deleted stale ${deleted}`);
 	for (const warning of warnings) console.warn(`  ⚠ ${warning.file}: ${warning.message}`);
-	for (const note of skipped) console.log(`  ○ skipped ${note} (publish: false)`);
+	for (const note of skipped) console.log(`  ○ skipped ${note} (draft: true)`);
 	console.log(`[content:sync] done — ${notes.length} note(s) published, ${skipped.length} skipped`);
 }
 

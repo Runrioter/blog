@@ -50,7 +50,7 @@ gh pr merge <n> --squash --delete-branch
 When a dependency cannot be adopted without unacceptable disruption:
 
 1. Write the report as a vault note via the `obsidian` MCP server (never reaches the site):
-   `journal/<yyyy-mm-dd>-dependabot-<pkg>-report.md`, frontmatter per the `notes` skill contract (`title`, `publish: false`, `created`, `updated`).
+   `journal/<yyyy-mm-dd>-dependabot-<pkg>-report.md`, frontmatter per the `notes` skill contract (`title`, `draft: true`, `created`, `updated`).
 2. Report contents: PR number, package, version span, breaking summary (release-note excerpts), impact on this repo (files/components affected), options (pin, wait for a compatible release, swap dependency), and a recommendation.
 3. Leave the PR open with a comment summarizing the blocker; mention the report path.
 

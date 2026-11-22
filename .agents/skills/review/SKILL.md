@@ -25,7 +25,7 @@ Check the diff against AGENTS.md's standing rules, especially:
 - pre-commit gate: `npm run lint` and `npm run check` must pass before a commit (never commit over a red gate).
 - SvelteKit 3 / Svelte 5 gotchas (`resolve()` in every href/goto, no module `$effect`, no exported reassigned `$state`/`$derived`, `:global()` single selector, …).
 - Routing/nav: internal links via `resolve`, single terminal mount, terminal profile mirrors the route tree.
-- Content: never hand-edit generated `.svx`/`toc.ts`; `publish: false` for vault-only notes.
+- Content: never hand-edit generated `.svx`/`toc.ts`; `draft: true` for vault-only notes.
 - Styling: theme tokens from `src/app.css` instead of hard-coded hexes.
 
 While auditing you may fix trivially blocked issues (formatting, a missed rule) — that is still part of the implementation. Substantive problems: stop, report, and wait; do not silently expand the change.

@@ -15,8 +15,8 @@ Never edit generated `+page.svx` files directly — they carry a `GENERATED` mar
 overwritten. If a note is deleted from the vault, the sync script deletes its stale generated
 page (only files with the marker are ever deleted; hand-written pages are safe).
 
-A note with `publish: false` in its frontmatter is **kept in the vault but never published**: the sync
-script skips it (no route, no TOC entry, logged as `○ skipped … (publish: false)`). Use it for
+A note with `draft: true` in its frontmatter is **kept in the vault but never published**: the sync
+script skips it (no route, no TOC entry, logged as `○ skipped … (draft: true)`). Use it for
 agent/project journal notes that should live in the vault without becoming a page.
 
 ## Vault conventions
