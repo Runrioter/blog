@@ -19,7 +19,7 @@ REPO_NAME ?= blog
 release: preflight
 	npm version $(BUMP) -m "Release v%s"
 	git push --follow-tags
-	@echo "✓ released v$$(node -p 'require(\"./package.json\").version')"
+	@tag=$$(git describe --tags --abbrev=0); echo "✓ released $${tag#v}"
 
 preflight:
 	npm run check
