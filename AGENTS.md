@@ -144,6 +144,7 @@ The site shell is a code-agent style TUI inside a macOS-like terminal window.
 - Start by reading the relevant source and config files that are not ignored by `.gitignore`.
 - Use `rg` or `rg --files` for searches so ignored files stay out of scope by default.
 - Check `git status --short` before editing and do not revert unrelated user changes.
+- **No auto-commit.** This project never commits by itself: after an implementation is finished, run the `review` skill (diff audit + validation gates) and let the user pick one of `COMMIT` / `RELEASE` / `HOLD`. Commit, push or release only after that explicit choice.
 - **Pre-commit gate (mandatory):** `npm run lint` AND `npm run check` must both pass before any commit; add `npm run test:e2e` for UI/terminal/routing changes. If Prettier flags files, run `npm run format` first, then re-check. Never commit over a red gate — a lint-red `Breadcrumb.svelte` already slipped into history once (the new `svelte/no-navigation-without-resolve` requires a literal `resolve()` in every `href`/`goto`, and `no-undef` ignores `app.d.ts` globals in `.svelte` files).
 - Prefer targeted edits over whole-file rewrites.
 - Keep generated artifacts out of commits unless the user explicitly asks for them.
@@ -165,7 +166,8 @@ Before finishing UI/layout work, verify all of the following still hold:
 
 Reusable workflows live in `.agents/skills/` (pi discovers them automatically; force with `/skill:<name>`):
 
-- `release` — pre-flight gates (incl. the `BASE_PATH` deploy-shape build and a workflow/dependency engine check), `make release [BUMP=…]` (native `npm version` bump + tag + push), Actions monitoring and failure triage.
+- `review` — end-of-implementation gate: diff audit, validation gates, then the three-way decision (commit only / commit + release / hold). No auto-commit anywhere else.
+- `release` — publishes from an already-committed, clean tree: `make release [BUMP=…]` (pre-flight incl. the `BASE_PATH` deploy-shape build + engine check, native `npm version` bump + tag + push), Actions monitoring and failure triage. It never reviews or commits feature code.
 - `visual-check` — build → preview → Playwright probe (`.agents/skills/visual-check/scripts/shot.mjs`) → screenshot → cleanup loop, plus the known visual failure classes to assert.
 - `content-update` — Obsidian vault edit → `npm run content:sync` → diff review → scaled validation → commit.
 - `notes` — record/search project knowledge in the vault through the `obsidian` MCP server (journal/decisions/research notes with `publish: false`).

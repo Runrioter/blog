@@ -1,6 +1,6 @@
 ---
 name: release
-description: Ship a blog release — full pre-flight validation (including the BASE_PATH deploy-shape build and a CI engine check), then `make release` (native `npm version` bump + tag) and monitor the GitHub Pages Actions run. Use when cutting a tag, running `make release`, deploying, or investigating a failed Pages deployment.
+description: Ship a blog release from an already-committed, clean tree — full pre-flight validation (including the BASE_PATH deploy-shape build and a CI engine check), then `make release` (native `npm version` bump + tag + push) and monitor the GitHub Pages Actions run. Use when cutting a tag, running `make release`, deploying, or investigating a failed Pages deployment. Scope: release only — review/committing feature code belongs to the `review` skill.
 ---
 
 # Release (GitHub Pages deploy)
