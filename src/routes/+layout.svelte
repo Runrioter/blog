@@ -75,14 +75,8 @@
 		return rel.replace(/^\//, '');
 	}
 
-	// Echo contract: terminal treats articles as .md files and sections as
-	// bare directories. Derived from the profile's dirs (top-level keys).
-	const sectionDirs = new Set(
-		Object.keys(shellTerminalProfile.dirs)
-			.map((d) => d.slice(1))
-			.filter(Boolean)
-	);
-
+	// Echo contract: routes already carry the .md convention (articles) vs
+	// bare dirs (sections) — see the naming contract in AGENTS.md.
 	function echoTarget(target: string): string {
 		// Routes already carry the convention: sections are bare dirs, articles
 		// are .md (e.g. /ai/basics.md) — echo them exactly as the URL shows.
