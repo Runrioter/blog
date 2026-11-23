@@ -10,3 +10,85 @@
 
 <ArticleTags tags={['llm', '原理', 'token', '采样']} />
 
+# LLM 是什么：理解大语言模型的工作方式
+
+## 为什么值得花时间理解它
+
+你用过的每个 AI 产品——ChatGPT、Codex、Claude——底层都是同一个东西：**大语言模型（Large Language Model, LLM）**。提示词写得好不好、Agent 设计得稳不稳，直接取决于你对"模型内部到底在做什么"的心智模型是否准确。不理解它，提示词就会变成玄学：同样的措辞换一下效果天差地别，你却不知道为什么。
+
+这篇文章给你一个能用于日常决策的最小心智模型：**token → next-token prediction → 采样**，外加几个最常踩的坑。
+
+## 核心概念
+
+### Token：模型读写的"原子"
+
+模型不读字符，读 **token**——一种介于字符和词之间的切分单元。例如英文 `unbelievable` 可能被切成 `un` + `believ` + `able`，中文"你好"通常占 1~2 个 token。粗暴估算：**英文 1 token ≈ 0.75 词，中文 1 token ≈ 1~1.5 个汉字**。
+
+实际影响：
+
+- **成本按 token 计费**：输入 + 输出都算钱，中文比英文"贵"。
+- **上下文窗口是 token 数**，不是字数：`context window`（如 128k token）决定了你能塞多少资料。
+- 要求模型"逐字处理"超长文本并不可靠——它每步只看固定窗口。
+
+在线查任意文本的 token 数，用 [OpenAI Tokenizer](https://platform.openai.com/tokenizer)。
+
+### Next-token prediction：模型唯一在做的事
+
+LLM 的训练目标极其简单：给定前面所有 token，**预测下一个 token 的概率分布**。
+
+```
+输入: "法国的首都是"
+预测: 巴黎 72%    伦敦 5%    柏林 3%    ...
+```
+
+生成过程就是**自回归**（autoregressive）：预测下一个 token → 拼上去 → 再预测下一个，循环直到遇到停止条件。
+
+这个机制决定了两个关键推论：
+
+1. **没有"回看全文"的重新思考**——每一步只有前面累积的内容。所以输出质量强烈依赖上下文是否把信息给足（这是提示词工程的立身之本）。
+2. **"思考"是隐式的**——模型不做显式的推理，只是基于模式生成。要求它"先分析再回答"（如 chain-of-thought）之所以有效，是因为**把中间步骤写出来 = 给它更多自回归步数**，每一步都基于更充分的前缀。
+
+### 采样：为什么同一个问题答案不同
+
+模型输出的是概率分布，要变成具体文本需要**采样策略**，最常用的是 `temperature`：
+
+- `temperature=0`：总是取概率最高的 token——稳定、可复现，适合代码、结构化输出。
+- `temperature` 越高：越会选低概率 token——多样、有"创意"，但同时更容易胡说。
+
+工程上记住：**需要确定性输出（代码、CI、数据提取）用低温度；创意写作再调高**。大多数 coding Agent（Codex、Copilot）默认用低温度，正是这个原因。
+
+## 最小可运行示例
+
+用 OpenAI Chat Completions API 最简调用（环境变量 `OPENAI_API_KEY`）：
+
+```bash
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "temperature": 0,
+    "messages": [
+      {"role": "system", "content": "你是一个严谨的编译器工程师，回答要简短准确。"},
+      {"role": "user", "content": "Python 里 `is` 和 `==` 的区别？"}
+    ]
+  }'
+```
+
+注意 `messages` 里的 **role 结构（system / user / assistant）不是装饰**：system 定义行为边界与风格、user 是任务、assistant 历史则成为"已输出的前缀"。这与本站 AI 系列（[基础概念](basics.md)、[系统指令设计](system-instructions.md)）的提示词分层完全对应——所谓 system prompt 工程，本质就是在操纵"前置上下文"。
+
+## 常见误区
+
+- **❌ "LLM 是知识库/搜索引擎"**。模型没有存储的"事实库"，它生成的是**概率上最像正确答案的文本**。知识有截止日期、会幻觉（hallucination）。需要事实准确性时，必须外挂检索（RAG）或工具调用校验。
+- **❌ "上下文长 = 模型记住了全部"**。长输入会出现"lost in the middle"现象——**中间部分的注意力显著弱于开头和结尾**。关键指令放开头/结尾，比堆在中段有效得多。
+- **❌ "温度调低 = 更聪明"**。温度只改变采样随机性，不改变模型能力；`temperature=0` 也不能保证逻辑正确，只是输出更稳定。
+- **❌ "给它说不要编造，它就不会编造"**。"不要幻觉"可以降低概率，但无法根除；真正可靠的是**允许它承认不知道**（加上"无法确定就直说"）以及在关键路径上校验输出。
+- **❌ "把整个代码库塞进上下文就有全局理解"**。塞得下不等于用得对——检索/聚焦比堆量更重要（这是 Agent 里 tool use 与上下文管理存在的理由）。
+
+## 延伸阅读
+
+- [OpenAI — Text generation guide（官方 API 指南）](https://platform.openai.com/docs/guides/text-generation)
+- [Hugging Face — LLM 相关文档与博客](https://huggingface.co/docs)
+- [Anthropic — Claude 文档与研究](https://www.anthropic.com/research)
+- [Attention Is All You Need（Transformer 原始论文）](https://arxiv.org/abs/1706.03762)
+- [本站系列：提示词工程入门](basics.md)
