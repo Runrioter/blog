@@ -9,5 +9,6 @@ export const tocItems: TocItem[] = [
 	{ path: 'ai/basics.md' satisfies TocPath, label: '基础概念' },
 	{ path: 'ai/system-instructions.md' satisfies TocPath, label: '系统指令设计' },
 	{ path: 'ai/agent-design.md' satisfies TocPath, label: 'Agent 行为设计' },
-	{ path: 'ai/formatting.md' satisfies TocPath, label: '输出格式规范' }
+	{ path: 'ai/formatting.md' satisfies TocPath, label: '输出格式规范' },
+	{ path: 'ai/llm.md' satisfies TocPath, label: 'LLM 是什么：理解大语言模型的工作方式' }
 ];
