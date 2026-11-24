@@ -41,7 +41,8 @@ gh pr merge <n> --squash --delete-branch
 ```
 
 - Always `make preflight` (the BASE_PATH deploy-shape build and e2e are the deploy guard). If preflight fails on the unmodified PR branch, **stop** and triage: the change is not safe.
-- After each merge: `git switch main && git pull && npm ci` so the next PR diffs against the fresh baseline.
+- **Playwright browser revs**: upgrading `@playwright/test` (or any package that bundles browser revisions) makes e2e fail with `Executable doesn't exist at …/chromium_headless_shell-<rev>/… Please run npx playwright install`. That is an environment step, not a code failure: run `npx playwright install` (or `… install chromium`), then re-run `make preflight`. Do this right after `npm ci` when the upgrade touches Playwright.
+- After each merge: `git switch main && git pull && npm ci` so the next PR diffs against the fresh baseline. `npm ci` re-links the runtimes, so re-check the browser cache (`ls ~/Library/Caches/ms-playwright/`) when a follow-up PR also touches Playwright.
 - Merge **one PR at a time**, lowest-risk first; watch for lockfile cascade conflicts (later PRs may need a dependabot rebase after an earlier merge).
 - Never force-push, never merge with failing checks, never use admin-merge to bypass CI.
 
