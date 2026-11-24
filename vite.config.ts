@@ -5,7 +5,6 @@ import type { Config } from '@sveltejs/kit/vite';
 import adapter from '@sveltejs/adapter-static';
 import { mdsvex } from 'mdsvex';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { rehypeHeadingIds } from './scripts/heading-slug.js';
 import tailwindcss from '@tailwindcss/vite';
 // import attributes keep vite 8's native config loader happy (no warning)
 import pkg from './package.json' with { type: 'json' };
@@ -36,7 +35,7 @@ function appVersion(): string {
 const kitConfig: Config = {
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
-	preprocess: [vitePreprocess(), mdsvex({ rehypePlugins: [rehypeHeadingIds] })],
+	preprocess: [vitePreprocess()],
 	// SvelteKit 3: `adapter`/`paths`/`prerender` are top-level, no `kit` namespace.
 	adapter: adapter({
 		pages: 'build',
@@ -60,7 +59,11 @@ const kitConfig: Config = {
 };
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(kitConfig)],
+	// mdsvex 1.x is a vite plugin (no longer a preprocessor group); its
+	// built-in heading_ids (github-style slugs via @mdsvex/parse heading_slug,
+	// matching scripts/heading-slug.js) replaces the old rehype plugin API so
+	// anchors stay stable.
+	plugins: [tailwindcss(), mdsvex({ heading_ids: true }), sveltekit(kitConfig)],
 
 	define: {
 		// Injected at compile time, like __SVELTEKIT_PATHS_BASE__; declared in

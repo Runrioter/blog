@@ -396,7 +396,10 @@ function generateToc(section: string, sectionNotes: Note[]): string {
 		'',
 		'export const tocItems: TocItem[] = [',
 		...items.map((note, index) => {
-			const line = `\t{ path: '${path.posix.join(section, note.name + '.md')}' satisfies TocPath, label: '${note.title.replace(/'/g, `\\'`)}' }`;
+			// Multi-line entries — prettier collapses to one line only when it
+			// fits within printWidth, and our CJK labels never do; emitting the
+			// wrapped form keeps content:sync and prettier in agreement.
+			const line = `\t{\n\t\tpath: '${path.posix.join(section, note.name + '.md')}' satisfies TocPath,\n\t\tlabel: '${note.title.replace(/'/g, `\\'`)}'\n\t}`;
 			return index === items.length - 1 ? line : `${line},`;
 		}),
 		'];'
